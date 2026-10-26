@@ -6,12 +6,13 @@
 <title>Sistem Umrah Pro (Kalkulator, Invoice & Kwitansi)</title>
 <style>
   * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
-  body { background: #f0f4f8; margin: 0; padding: 15px; color: #1e293b; font-size: 14px; }
+  body { background: #f0f4f8; margin: 0; padding: 10px; color: #1e293b; font-size: 14px; }
   .container { max-width: 1240px; margin: 0 auto; }
   
-  /* Tabs Navigation */
-  .tabs { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
-  .tab-btn { background: #e2e8f0; border: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; color: #475569; cursor: pointer; flex: 1; font-size: 13px; transition: 0.2s; }
+  /* Tabs Navigation - Dibuat scroll horizontal di mobile agar tidak memakan tempat */
+  .tabs { display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 8px; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; scrollbar-width: none; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab-btn { background: #e2e8f0; border: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; color: #475569; cursor: pointer; flex: 0 0 auto; font-size: 13px; transition: 0.2s; white-space: nowrap; }
   .tab-btn.active { background: #0f766e; color: white; box-shadow: 0 4px 6px rgba(15, 118, 110, 0.3); }
   .tab-content { display: none; animation: fadeIn 0.3s; }
   .tab-content.active { display: block; }
@@ -19,19 +20,20 @@
 
   /* Header & Layout */
   .header-top { display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; }
-  .header-top h1 { color: #0f766e; margin: 0 0 5px 0; font-size: 22px; line-height: 1.2; }
-  .header-top .sub { color: #64748b; margin: 0; font-size: 13px; }
-  .top-actions { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+  .header-top h1 { color: #0f766e; margin: 0 0 5px 0; font-size: 20px; line-height: 1.2; }
+  .header-top .sub { color: #64748b; margin: 0; font-size: 12px; }
+  .top-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; }
+  .top-actions .btn:last-child { grid-column: 1 / -1; }
   
   /* Step Headers */
-  .step-container { margin-bottom: 25px; }
+  .step-container { margin-bottom: 20px; }
   .step-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
   .step-badge { background: #0f766e; color: white; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
-  .step-title { font-size: 16px; color: #0f766e; font-weight: 700; margin: 0; }
+  .step-title { font-size: 15px; color: #0f766e; font-weight: 700; margin: 0; }
   
   /* Cards & Grids */
-  .card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,.05); border: 1px solid #e2e8f0; }
-  .grid, .grid-2, .grid-3, .dep-grid, .dep-grid-3 { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 12px; }
+  .card { background: white; border-radius: 12px; padding: 12px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,.05); border: 1px solid #e2e8f0; }
+  .grid, .grid-2, .grid-3, .dep-grid, .dep-grid-3 { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 10px; }
   
   /* Forms */
   label { display: block; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 6px; }
@@ -40,7 +42,7 @@
   
   .input-group { display: flex; gap: 0; }
   .input-group input { border-radius: 8px 0 0 8px; border-right: none; min-width: 0; }
-  .input-group select.cur { width: 80px; flex-shrink: 0; border-radius: 0 8px 8px 0; font-weight: 700; color: #0f766e; font-size: 13px; padding: 0 5px; }
+  .input-group select.cur { width: 70px; flex-shrink: 0; border-radius: 0 8px 8px 0; font-weight: 700; color: #0f766e; font-size: 13px; padding: 0 5px; }
   
   /* Buttons */
   .btn { background: #0f766e; color: #fff; border: none; padding: 12px 18px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; width: 100%; }
@@ -53,13 +55,12 @@
   
   /* Info Boxes */
   .info-box { background: #f0fdfa; border-left: 4px solid #14b8a6; padding: 10px 12px; border-radius: 6px; font-size: 12px; color: #0f766e; margin-bottom: 15px; line-height: 1.4; }
-  .info-box.import { background: #fef3c7; border-left-color: #f59e0b; color: #92400e; }
   .info-box.warning { background: #fee2e2; border-left-color: #ef4444; color: #991b1b; }
   
   /* Tables */
-  .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 10px; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 400px; }
-  th, td { padding: 10px 8px; border: 1px solid #e2e8f0; text-align: right; }
+  .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 10px; padding-bottom: 5px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 100%; }
+  th, td { padding: 8px 5px; border: 1px solid #e2e8f0; text-align: right; }
   th { background: #f1f5f9; text-align: center; font-weight: 700; color: #334155; font-size: 12px; }
   td.left, th.left { text-align: left; }
 
@@ -70,17 +71,24 @@
   .profit-row { background: #ecfdf5; color: #047857; font-weight: bold; border-top: 2px solid #10b981; }
 
   /* Invoice Custom Styles */
-  .invoice-card { border: 2px solid #0f766e; border-radius: 12px; padding: 20px; background: white; margin-bottom: 20px; }
-  .invoice-header { display: flex; justify-content: space-between; border-bottom: 2px dashed #cbd5e1; padding-bottom: 10px; margin-bottom: 15px; flex-direction: column; gap: 10px; }
-  @media (min-width: 500px) { .invoice-header { flex-direction: row; } }
+  .invoice-card { border: 2px solid #0f766e; border-radius: 12px; padding: 15px; background: white; margin-bottom: 20px; }
+  .invoice-header { display: flex; flex-direction: column; border-bottom: 2px dashed #cbd5e1; padding-bottom: 10px; margin-bottom: 15px; gap: 10px; }
   .invoice-title { font-size: 18px; font-weight: bold; color: #0f766e; }
-  .invoice-meta { font-size: 13px; color: #475569; line-height: 1.6; }
-  .terbilang-box { background: #fef3c7; border: 1px solid #fde68a; padding: 10px; font-style: italic; font-weight: bold; color: #92400e; margin: 15px 0; border-radius: 6px; font-size: 14px; }
+  .invoice-meta { font-size: 13px; color: #475569; line-height: 1.5; }
+  .terbilang-box { background: #fef3c7; border: 1px solid #fde68a; padding: 10px; font-style: italic; font-weight: bold; color: #92400e; margin: 15px 0; border-radius: 6px; font-size: 13px; }
+
+  /* Tabel Info Invoice (Kiri Kanan) */
+  .inv-info-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+  .inv-info-table td { border: none; padding: 6px 0; border-bottom: 1px dotted #cbd5e1; text-align: right; font-size: 13px; }
+  .inv-info-table td.left { text-align: left; color: #475569; }
+  
+  /* Form Pembayaran */
+  .pay-form-grid { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 10px; }
 
   /* City Tour & Logistik */
   .tour-container { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; padding: 10px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; }
   .tour-item { background: white; border: 1px solid #e2e8f0; padding: 10px; border-radius: 8px; display: flex; flex-direction: column; gap: 8px; }
-  .tour-item label { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14px; margin: 0; cursor: pointer; }
+  .tour-item label { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 13px; margin: 0; cursor: pointer; }
   .tour-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: #0f766e; }
   .tour-price-wrap { display: none; }
   .tour-price-wrap.active { display: flex; }
@@ -89,29 +97,63 @@
   .logistik-fields { display: none; margin-top: 15px; padding: 12px; background: #f1f5f9; border-radius: 8px; }
   .logistik-fields.active { display: block; animation: fadeIn 0.3s ease-in-out; }
 
-  /* Tambahan CSS untuk Mode Makan */
+  /* Mode Makan */
   .makan-toggle { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; margin-bottom: 15px; }
-  .makan-toggle label { display: flex; align-items: center; gap: 8px; padding: 10px 15px; border: 1px solid #cbd5e1; border-radius: 8px; cursor: pointer; background: #f8fafc; font-weight: 600; font-size: 13px; color: #475569; transition: 0.2s; margin: 0; }
+  .makan-toggle label { display: flex; align-items: center; gap: 8px; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; cursor: pointer; background: #f8fafc; font-weight: 600; font-size: 13px; color: #475569; transition: 0.2s; margin: 0; }
   .makan-toggle label.active { border-color: #0f766e; background: #f0fdfa; color: #0f766e; }
   .makan-toggle input[type="radio"] { width: 18px; height: 18px; accent-color: #0f766e; margin: 0; }
-  
-  /* Desktop View */
+
+  /* === MOBILE OPTIMIZATION (Layar < 600px) === */
+  @media (max-width: 600px) {
+    /* Ubah Tabel Info Invoice menjadi bentuk Vertikal (Stack) */
+    .inv-info-table, .inv-info-table tbody, .inv-info-table tr, .inv-info-table td { display: block; width: 100%; }
+    .inv-info-table tr { border-bottom: 1px solid #e2e8f0; padding: 5px 0; margin-bottom: 5px; }
+    .inv-info-table td { border: none; padding: 2px 0; text-align: left !important; }
+    .inv-info-table td.left { font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 2px; }
+    
+    /* Tabel Pembayaran & Rincian HPP jadi lebih rapi */
+    table { font-size: 12px; }
+    th, td { padding: 6px 4px; }
+    
+    /* Tombol Cetak full width */
+    .btn-print { width: 100%; padding: 10px; margin-top: 10px; }
+    .invoice-header button { width: 100%; justify-content: center; }
+    
+    /* Print header layout */
+    .invoice-header > div { width: 100%; text-align: left !important; }
+    
+    /* Sembunyikan text keterangan opsional di tabel pembayaran agar muat */
+    .tabelPembayaran .metode-col { font-size: 11px; }
+  }
+
+  /* === DESKTOP VIEW (Layar > 768px) === */
   @media (min-width: 768px) {
     body { padding: 25px; font-size: 14px; }
     .header-top { flex-direction: row; justify-content: space-between; align-items: center; }
-    .top-actions { flex-direction: row; width: auto; }
+    .top-actions { display: flex; flex-direction: row; width: auto; }
     .top-actions .btn { width: auto; }
     .grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
     .grid-3 { grid-template-columns: repeat(3, 1fr); }
     .grid-2 { grid-template-columns: 1fr 1fr; }
     .dep-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
-    .dep-grid-3 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
     .kurs-panel { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
     .makan-toggle { flex-direction: row; }
     .makan-toggle label { flex: 1; justify-content: center; }
     .tour-container { flex-direction: row; flex-wrap: wrap; }
     .tour-item { flex: 1 1 160px; }
     .tab-btn { flex: none; }
+    
+    .invoice-header { flex-direction: row; }
+    .invoice-header > div { width: auto; text-align: left !important; }
+    .invoice-header > div:last-child { text-align: right !important; }
+    
+    .pay-form-grid { grid-template-columns: 1fr 1fr 1fr; }
+    
+    /* Kembalikan Tabel Info Invoice ke bentuk biasa (kiri-kanan) di Desktop */
+    .inv-info-table { display: table; }
+    .inv-info-table tbody { display: table-row-group; }
+    .inv-info-table tr { display: table-row; border: none; padding: 0; }
+    .inv-info-table td { display: table-cell; border-bottom: 1px solid #e2e8f0; padding: 8px 0; text-align: right; }
   }
 </style>
 </head>
@@ -153,7 +195,7 @@
         </div>
       </div>
 
-      <div class="kurs-panel">
+      <div class="kurs-panel" style="display:grid; gap:10px;">
         <div style="grid-column: 1 / -1; margin-bottom:5px;"><b>0.1. Kurs Lokal & Mata Uang Default</b></div>
         <div>
           <label>Kurs 1 SAR (Riyal Saudi)</label>
@@ -198,7 +240,6 @@
           <div><label>Hotel Madinah / malam</label><div class="input-group"><input id="rateMadinah" type="text" inputmode="numeric" class="num-format" value="500.000"><select id="rateMadinah-cur" class="cur"><option>IDR</option><option>SAR</option><option>USD</option></select></div><small class="conv" id="rateMadinah-conv" style="display:none;"></small></div>
         </div>
         
-        <!-- PERBAIKAN: Menambahkan onchange pada radio button -->
         <div class="makan-toggle">
           <div style="font-size:12px; font-weight:700; color:#475569; margin-bottom:5px; width:100%;">🍽️ Mode Makan</div>
           <label class="active" data-mode="fullboard">
@@ -229,7 +270,6 @@
         <div class="grid">
           <div>
             <label>Pilih Paket Handling</label>
-            <!-- PERBAIKAN: Menambahkan onchange pada select -->
             <select id="handlingTier" onchange="updateHandlingFeatures()" style="font-weight:700; color:#c2410c;">
               <option value="none">TANPA HANDLING</option>
               <option value="basic">BASIC</option>
@@ -302,10 +342,10 @@
   <!-- ============================================== -->
   <div id="tab-jadwal" class="tab-content">
     <div class="card">
-      <h2 style="margin-top:0; color:#0f766e;">🗓️ Master Jadwal & Harga Paket</h2>
+      <h2 style="margin-top:0; color:#0f766e; font-size:18px;">🗓️ Master Jadwal & Harga Paket</h2>
       <div class="info-box">Masukkan data paket Anda di sini. Data ini tersimpan di browser dan bisa dipanggil saat membuat Invoice.</div>
       
-      <div class="grid grid-2" style="background:#f8fafc; padding:15px; border-radius:8px; border:1px solid #e2e8f0; margin-bottom:20px;">
+      <div class="grid grid-2" style="background:#f8fafc; padding:12px; border-radius:8px; border:1px solid #e2e8f0; margin-bottom:20px;">
         <div style="grid-column: 1 / -1;"><label>Nama Paket / Periode</label><input type="text" id="jdwNama" placeholder="Contoh: Umroh Reguler 9 Hari (Januari)"></div>
         <div><label>Tanggal Keberangkatan</label><input type="date" id="jdwTanggal"></div>
         <div><label>Kuota (Pax)</label><input type="number" id="jdwKuota" placeholder="45"></div>
@@ -343,11 +383,11 @@
     
     <!-- Form Buat Invoice Baru -->
     <div class="card">
-      <h2 style="margin-top:0; color:#0f766e;">🧾 Buat / Edit Invoice</h2>
-      <div class="info-box warning">
+      <h2 style="margin-top:0; color:#0f766e; font-size:18px;">🧾 Buat / Edit Invoice</h2>
+      <div class="info-box warning" style="font-size:11px;">
         <b>Biaya Upgrade Kamar (Hotel Bintang 3 - Low Season):</b><br>
-        • <b>DOUBLE</b>: 9D (Rp 2.750.000) | 12D (Rp 4.500.000) | 16D (Rp 6.500.000)<br>
-        • <b>TRIPLE</b>: 9D (Rp 1.500.000) | 12D (Rp 2.500.000) | 16D (Rp 4.000.000)
+        • <b>DOUBLE</b>: 9D (2,75Jt) | 12D (4,5Jt) | 16D (6,5Jt)<br>
+        • <b>TRIPLE</b>: 9D (1,5Jt) | 12D (2,5Jt) | 16D (4Jt)
       </div>
       
       <div class="grid grid-2">
@@ -361,7 +401,7 @@
         <div><label>Nomor Invoice</label><input type="text" id="invNomor" placeholder="INV-2024-001"></div>
         <div><label>Nama Penerima</label><input type="text" id="invNama" placeholder="Budi Santoso / PT. Travel"></div>
         <div><label>Nomor HP</label><input type="text" id="invHP" placeholder="0812..."></div>
-        <div><label>Pilih Paket dari Jadwal</label><select id="invPaketSelect" onchange="pilihPaketInvoice()"><option value="">-- Pilih Paket --</option></select></div>
+        <div style="grid-column: 1 / -1;"><label>Pilih Paket dari Jadwal</label><select id="invPaketSelect" onchange="pilihPaketInvoice()"><option value="">-- Pilih Paket --</option></select></div>
         
         <div><label>Durasi Paket</label>
           <select id="invDurasi" onchange="hitungTotalInvoice()">
@@ -399,16 +439,18 @@
 
     <!-- Cari Pembayaran & Detail -->
     <div class="card">
-      <h2 style="margin-top:0; color:#0f766e;">🔍 Cek Data Pembayaran</h2>
-      <div class="grid" style="grid-template-columns: 2fr 1fr; gap:10px; align-items:end;">
+      <h2 style="margin-top:0; color:#0f766e; font-size:18px;">🔍 Cek Data Pembayaran</h2>
+      <div style="display: flex; flex-direction: column; gap:10px;">
         <div><label>Masukkan Nomor Invoice</label><input type="text" id="cariInvoice" placeholder="INV-2024-001"></div>
-        <button class="btn" onclick="cariDataInvoice()" style="height:42px; background:#f59e0b;">Cek</button>
+        <button class="btn" onclick="cariDataInvoice()" style="background:#f59e0b;">Cek Invoice</button>
       </div>
     </div>
 
     <!-- Hasil Tampilan Invoice -->
     <div id="hasilInvoiceContainer" style="display:none;">
       <div class="invoice-card">
+        
+        <!-- HEADER INVOICE -->
         <div class="invoice-header">
           <div>
             <div class="invoice-title" id="viewInvTitle">INVOICE TAGIHAN</div>
@@ -417,40 +459,53 @@
               Tanggal: <span id="viewInvTanggal"></span>
             </div>
           </div>
-          <div style="text-align:left;">
+          <div>
             <div class="invoice-meta">
               <span id="viewInvLabelPenerima" style="font-weight:bold; color:#0f766e; display:block; margin-bottom:4px;"></span>
               <b id="viewInvNama" style="font-size:15px;"></b><br>
               <span id="viewInvHP"></span>
             </div>
           </div>
-          <div style="text-align:right; align-self:flex-start;">
-             <button class="btn btn-print" onclick="cetakInvoice()" style="padding:6px 12px; font-size:12px;">🖨️ Cetak Invoice</button>
+          <div>
+             <button class="btn btn-print" onclick="cetakInvoice()" style="padding:8px 12px; font-size:12px;">🖨️ Cetak Invoice</button>
           </div>
         </div>
         
-        <table style="margin-bottom:15px; font-size:14px; width:100%;">
+        <!-- TABEL INFO INVOICE (Dibuat responsif dengan class inv-info-table) -->
+        <table class="inv-info-table">
           <tr><td class="left"><b>Paket Umrah</b></td><td id="viewInvPaket"></td></tr>
           <tr><td class="left"><b>Tipe Kamar</b></td><td id="viewInvKamar" style="text-transform:uppercase;"></td></tr>
           <tr id="rowInvPax"><td class="left"><b>Jumlah Jamaah</b></td><td id="viewInvPax"></td></tr>
           <tr id="rowInvBase"><td class="left">Harga Dasar / pax (Quad)</td><td id="viewInvBase"></td></tr>
           <tr id="rowInvUpgrade"><td class="left">Biaya Upgrade / pax</td><td id="viewInvUpgrade"></td></tr>
           <tr id="rowInvPerPax" style="background:#ecfdf5;">
-            <td class="left"><b>Harga per Pax</b></td>
-            <td id="viewInvPerPax" style="font-weight:bold; color:#047857;"></td>
+            <td class="left" style="color:#047857;"><b>Harga per Pax</b></td>
+            <td id="viewInvPerPax" style="font-weight:bold; color:#047857; font-size:15px;"></td>
           </tr>
-          <tr style="background:#e2e8f0;"><td class="left"><b>TOTAL TAGIHAN</b></td><td id="viewInvTotal" style="font-weight:bold; font-size:16px;"></td></tr>
+          <tr style="background:#e2e8f0; border-radius:8px;">
+            <td class="left" style="font-weight:bold; color:#1e293b; font-size:14px; padding-left:8px;">TOTAL TAGIHAN</td>
+            <td id="viewInvTotal" style="font-weight:bold; font-size:16px; color:#0f766e; padding-right:8px;"></td>
+          </tr>
         </table>
 
-        <h4 style="margin-bottom:10px; color:#0f766e;">Riwayat Pembayaran:</h4>
+        <h4 style="margin:20px 0 10px 0; color:#0f766e; font-size:14px;">Riwayat Pembayaran:</h4>
         <div class="table-responsive">
           <table id="tabelPembayaran">
-            <thead><tr><th>Tanggal</th><th>Keterangan</th><th>Metode</th><th>Jumlah</th><th>Aksi</th></tr></thead>
+            <thead>
+              <tr>
+                <th class="left">Tanggal</th>
+                <th class="left">Keterangan</th>
+                <th class="metode-col">Metode</th>
+                <th>Jumlah</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
             <tbody id="tbodyPembayaran"></tbody>
           </table>
         </div>
         
-        <div class="grid grid-3" style="margin-top:10px;">
+        <!-- FORM TAMBAH PEMBAYARAN (Grid diubah jadi 1 kolom di mobile) -->
+        <div class="pay-form-grid">
           <div><input type="date" id="payTanggal"></div>
           <div><input type="text" id="payKet" placeholder="DP / Cicilan 1"></div>
           <div>
@@ -465,9 +520,10 @@
 
         <div class="terbilang-box" id="viewTerbilang">Terbilang: -</div>
 
-        <table style="font-size:14px;">
+        <!-- TABEL RINGKASAN TAGIHAN -->
+        <table class="inv-info-table">
           <tr><td class="left">Total Dibayar</td><td id="viewTotalBayar"></td></tr>
-          <tr class="total-row"><td class="left">Sisa Tagihan</td><td id="viewSisaTagihan"></td></tr>
+          <tr class="total-row"><td class="left" style="color:#991b1b;"><b>Sisa Tagihan</b></td><td id="viewSisaTagihan" style="font-weight:bold; font-size:15px;"></td></tr>
         </table>
       </div>
     </div>
@@ -493,7 +549,12 @@ function openTab(tabName) {
   document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
   document.getElementById(tabName).classList.add('active');
-  event.currentTarget.classList.add('active');
+  
+  // Cari tombol yang diklik berdasarkan isi teks atau urutan
+  const btns = document.querySelectorAll('.tab-btn');
+  btns.forEach(btn => {
+    if(btn.getAttribute('onclick').includes(tabName)) btn.classList.add('active');
+  });
   
   if(tabName === 'tab-invoice') {
     renderPilihanPaketInvoice();
@@ -566,7 +627,7 @@ function addDeparture(name = '', flight = '', pax = '', airline = '', hotelMakka
   const wrap = document.getElementById('departures');
   const block = document.createElement('div');
   block.className = 'dep-block';
-  block.style.cssText = 'background:#f8fafc; padding:15px; border-radius:8px; border:1px solid #e2e8f0; margin-bottom:15px;';
+  block.style.cssText = 'background:#f8fafc; padding:12px; border-radius:8px; border:1px solid #e2e8f0; margin-bottom:15px;';
   const def = document.getElementById('defaultCur').value;
   
   const tourHTML = TOURS.map(t => `
@@ -584,7 +645,7 @@ function addDeparture(name = '', flight = '', pax = '', airline = '', hotelMakka
       <div><label>Pax Dewasa</label><input class="dep-pax" type="number" value="${pax}"></div>
       <div><label>Pax Anak</label><input class="dep-child" type="number" value="0"></div>
       <div><label>Harga Tiket / pax</label><div class="input-group"><input class="dep-flight num-format" type="text" inputmode="numeric" value="${flight}"><select class="dep-cur cur"><option>IDR</option><option>SAR</option><option>USD</option></select></div><small class="conv dep-conv" style="display:none;"></small></div>
-      <div style="display:flex; gap:5px; margin-top: 15px;"><button class="btn btn-duplicate" onclick="duplicateDeparture(this)" style="flex:1;">📋 Duplikat</button><button class="btn btn-danger" onclick="this.closest('.dep-block').remove(); calculate();" style="flex:1;">Hapus</button></div>
+      <div style="display:flex; gap:5px; margin-top: 15px;"><button class="btn btn-duplicate" onclick="duplicateDeparture(this)" style="flex:1; padding:8px;">📋 Duplikat</button><button class="btn btn-danger" onclick="this.closest('.dep-block').remove(); calculate();" style="flex:1; padding:8px;">Hapus</button></div>
     </div>
     <div style="margin-top:15px;"><div style="font-size:12px; font-weight:bold; color:#0f766e; margin-bottom:8px;">Tambahan City Tour:</div><div class="tour-container">${tourHTML}</div></div>
     <div class="logistik-toggle-area"><label style="display:inline-flex; align-items:center; gap:8px; cursor:pointer; font-weight:600; font-size:13px; color:#0f766e;"><input type="checkbox" onchange="toggleLogistik(this)" style="width:18px; height:18px;"> Tampilkan Data Logistik</label></div>
@@ -710,16 +771,16 @@ function calculate() {
     const tourSummary = dep.tours.length ? dep.tours.map(t => t.name).join(' + ') + ' — Total grup <b>' + fmt(dep.tourTotalGroup) + '</b> ÷ ' + dep.pax + ' pax = <b>' + fmt(dep.tourPerPax) + '/pax</b>' : 'tidak ada';
     const dateFormatted = dep.name ? new Date(dep.name).toLocaleDateString('id-ID', {day:'2-digit', month:'long', year:'numeric'}) : '-';
     html += `<div style="background:white; border-radius:12px; padding:15px; margin-bottom:15px; box-shadow:0 2px 8px rgba(0,0,0,.05); border:1px solid #e2e8f0;">
-      <h3 style="color:#0f766e; margin:0 0 10px 0; font-size:16px;">📅 ${dateFormatted} <span style="font-size:12px;font-weight:normal;color:#64748b">— ${dep.pax} pax</span></h3>
+      <h3 style="color:#0f766e; margin:0 0 10px 0; font-size:15px;">📅 ${dateFormatted} <span style="font-size:12px;font-weight:normal;color:#64748b">— ${dep.pax} pax</span></h3>
       <div style="font-size:12px; color:#475569; margin-bottom:10px; line-height:1.5;">✈️ Penerbangan: <b>${dep.flightNo} (${dep.airline})</b><br>🛬 Bandara Kedatangan: <b>${dep.arrivalAirport}</b> | 🛫 Bandara Kepulangan: <b>${dep.departureAirport}</b><br>🏨 Makkah: <b>${dep.hotelMakkah}</b> | Madinah: <b>${dep.hotelMadinah}</b><br>🚩 Destinasi Pertama: <b>${dep.firstCity === 'makkah' ? 'Makkah' : 'Madinah'}</b></div>
       <p style="font-size:12px; color:#7c3aed; margin: 4px 0;">🧭 City tour: ${tourSummary}</p>
       
       <div style="margin-bottom: 15px; display:flex; gap:10px;">
-        <button class="btn" style="flex:1; background:#2563eb; padding:8px;" onclick="simpanKeJadwal(${depIndex}, '${viewPkg}')">💾 Simpan ke Jadwal</button>
-        <button class="btn" style="flex:1; background:#10b981; padding:8px;" onclick="buatInvoiceDariKalkulator(${depIndex}, '${viewPkg}')">🧾 Buat Invoice</button>
+        <button class="btn" style="flex:1; background:#2563eb; padding:8px; font-size:12px;" onclick="simpanKeJadwal(${depIndex}, '${viewPkg}')">💾 Ke Jadwal</button>
+        <button class="btn" style="flex:1; background:#10b981; padding:8px; font-size:12px;" onclick="buatInvoiceDariKalkulator(${depIndex}, '${viewPkg}')">🧾 Invoice</button>
       </div>
 
-      <div class="table-responsive"><table><thead><tr><th class="left">Komponen Biaya / pax</th><th>${PACKAGES[viewPkg].label}</th></tr></thead><tbody>`;
+      <div class="table-responsive"><table style="min-width: 100%;"><thead><tr><th class="left">Komponen Biaya / pax</th><th>${PACKAGES[viewPkg].label}</th></tr></thead><tbody>`;
     const rows = [['Tiket Pesawat', () => dep.flight], ['Visa', () => fixed.visa], ['Hotel Makkah', () => dep.results[viewPkg].hMakkah], ['Hotel Madinah', () => dep.results[viewPkg].hMadinah], ['Transport Bus <span class="group-tag" style="font-size:10px;color:#4338ca;margin-left:4px;">÷ ' + dep.pax + '</span>', () => dep.transportPerPax], ['Muthawif <span class="group-tag" style="font-size:10px;color:#4338ca;margin-left:4px;">× ' + dep.pax + '</span>', () => dep.muthawifPerPaxByDay[viewPkg]], ['Handling Service', () => dep.handlingIDR], ['Makan', () => dep.results[viewPkg].makan], ['Perlengkapan', () => fixed.perlengkapan], ['Asuransi', () => fixed.asuransi]];
     rows.forEach(([label, fn]) => { html += `<tr><td class="left">${label}</td><td>${fmt(fn())}</td></tr>`; });
     if (dep.tours.length) { dep.tours.forEach(t => { html += `<tr class="tour-row"><td class="left">↳ ${t.name}</td><td>${fmt(t.perPax)}</td></tr>`; }); html += `<tr style="background:#f5f3ff; color:#6d28d9; font-weight:600;"><td class="left">Subtotal City Tour</td><td>${fmt(dep.tourPerPax)}</td></tr>`; }
@@ -812,7 +873,7 @@ function renderJadwal() {
       <td>${j.triple ? fmt(j.triple) : '-'}</td>
       <td>${j.double ? fmt(j.double) : '-'}</td>
       <td>${j.kuota || '-'}</td>
-      <td><button class="btn btn-danger" style="padding:5px 10px; font-size:12px;" onclick="hapusJadwal(${j.id})">Hapus</button></td>
+      <td><button class="btn btn-danger" style="padding:5px 10px; font-size:11px;" onclick="hapusJadwal(${j.id})">Hapus</button></td>
     `;
     tbody.appendChild(tr);
   });
@@ -921,7 +982,6 @@ function cariDataInvoice(nomorDirect = null) {
 
   const isOwner = inv.recipientType === 'owner';
 
-  // Header Penerima & Judul
   if (isOwner) {
     document.getElementById('viewInvTitle').textContent = 'INVOICE TAGIHAN AGEN/OWNER';
     document.getElementById('viewInvLabelPenerima').textContent = 'Kepada Yth, Owner/Pimpinan:';
@@ -940,16 +1000,13 @@ function cariDataInvoice(nomorDirect = null) {
 
   const perPax = inv.basePrice + inv.upgradeCost;
 
-  // ===== TOGGLE TAMPILAN: OWNER vs JAMAAH =====
   if (isOwner) {
-    // OWNER: tampilkan rincian base + upgrade
     document.getElementById('rowInvBase').style.display = '';
     document.getElementById('rowInvUpgrade').style.display = '';
     document.getElementById('rowInvPerPax').style.display = 'none';
     document.getElementById('viewInvBase').textContent = fmt(inv.basePrice) + ' / pax';
     document.getElementById('viewInvUpgrade').textContent = fmt(inv.upgradeCost) + ' / pax';
   } else {
-    // JAMAAH: sembunyikan rincian, hanya tampilkan harga per pax & jumlah jamaah
     document.getElementById('rowInvBase').style.display = 'none';
     document.getElementById('rowInvUpgrade').style.display = 'none';
     document.getElementById('rowInvPerPax').style.display = '';
@@ -967,7 +1024,7 @@ function renderTabelPembayaran(inv) {
   let totalBayar = 0;
 
   if(inv.pembayaran.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#94a3b8;">Belum ada pembayaran.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#94a3b8; padding:15px;">Belum ada pembayaran.</td></tr>';
   } else {
     inv.pembayaran.forEach((p, idx) => {
       totalBayar += p.jumlah;
@@ -975,11 +1032,11 @@ function renderTabelPembayaran(inv) {
         <tr>
           <td>${new Date(p.tgl).toLocaleDateString('id-ID')}</td>
           <td class="left">${p.ket}</td>
-          <td>${p.metode || 'Cash'}</td>
+          <td class="metode-col">${p.metode || 'Cash'}</td>
           <td>${fmt(p.jumlah)}</td>
-          <td style="display:flex; gap:4px; justify-content:flex-end;">
-            <button class="btn btn-print" style="padding:4px 8px; font-size:11px;" onclick="cetakKwitansi('${inv.nomor}', ${idx})">🖨️</button>
-            <button class="btn btn-danger" style="padding:4px 8px; font-size:11px;" onclick="hapusPembayaran('${inv.nomor}', ${idx})">X</button>
+          <td style="display:flex; gap:4px; justify-content:center;">
+            <button class="btn btn-print" style="padding:4px 6px; font-size:11px;" onclick="cetakKwitansi('${inv.nomor}', ${idx})">🖨️</button>
+            <button class="btn btn-danger" style="padding:4px 6px; font-size:11px;" onclick="hapusPembayaran('${inv.nomor}', ${idx})">X</button>
           </td>
         </tr>`;
     });
@@ -1040,10 +1097,8 @@ function cetakInvoice() {
   const titleText = isOwner ? 'INVOICE TAGIHAN AGEN/OWNER' : 'INVOICE JAMAAH';
   const recipientText = isOwner ? `<b>Kepada Yth, Owner/Pimpinan</b>` : `<b>Kepada Yth, Calon Jamaah</b>`;
 
-  // ===== BANGUN TABEL RINCIAN BIAYA SESUAI TIPE PENERIMA =====
   let detailRows = '';
   if (isOwner) {
-    // OWNER: rincian lengkap (base + upgrade + total)
     detailRows = `
       <tr><th>Deskripsi</th><th>Harga / Pax</th><th>Total</th></tr>
       <tr>
@@ -1058,7 +1113,6 @@ function cetakInvoice() {
       </tr>
     `;
   } else {
-    // JAMAAH: hanya harga per pax & jumlah jamaah
     detailRows = `
       <tr><th>Deskripsi</th><th>Harga / Pax</th><th>Jumlah Jamaah</th><th>Total</th></tr>
       <tr>
@@ -1264,7 +1318,6 @@ function exportSurat() {
   
   doc.getElementById('t-pricePax').textContent = fmt(res.selling);
   
-  // Tampilkan Total Pax HANYA untuk Owner
   if (recipientType === 'owner') {
     doc.getElementById('t-totalLabel').textContent = 'Total Harga (' + dep.pax + ' Pax)';
     doc.getElementById('t-priceTotal').textContent = fmt(res.selling * dep.pax);
@@ -1273,7 +1326,6 @@ function exportSurat() {
     doc.getElementById('t-priceTotal').parentElement.style.display = 'none';
   }
 
-  // Modifikasi Teks Penerima
   if (doc.getElementById('t-recipient-type')) {
     doc.getElementById('t-recipient-type').innerHTML = 'Kepada Yth. <b>' + recipientText + '</b>,';
   }
