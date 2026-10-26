@@ -3,89 +3,80 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kalkulator HPP Umrah Pro</title>
+<title>Sistem Umrah Pro (Kalkulator, Invoice & Kwitansi)</title>
 <style>
   * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
   body { background: #f0f4f8; margin: 0; padding: 15px; color: #1e293b; font-size: 14px; }
   .container { max-width: 1240px; margin: 0 auto; }
   
-  /* Header */
+  /* Tabs Navigation */
+  .tabs { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
+  .tab-btn { background: #e2e8f0; border: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; color: #475569; cursor: pointer; flex: 1; font-size: 13px; transition: 0.2s; }
+  .tab-btn.active { background: #0f766e; color: white; box-shadow: 0 4px 6px rgba(15, 118, 110, 0.3); }
+  .tab-content { display: none; animation: fadeIn 0.3s; }
+  .tab-content.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* Header & Layout */
   .header-top { display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; }
   .header-top h1 { color: #0f766e; margin: 0 0 5px 0; font-size: 22px; line-height: 1.2; }
   .header-top .sub { color: #64748b; margin: 0; font-size: 13px; }
   .top-actions { display: flex; flex-direction: column; gap: 8px; width: 100%; }
-  .top-actions .btn { width: 100%; padding: 12px; font-size: 14px; }
   
   /* Step Headers */
   .step-container { margin-bottom: 25px; }
   .step-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
-  .step-badge { background: #0f766e; color: white; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
+  .step-badge { background: #0f766e; color: white; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
   .step-title { font-size: 16px; color: #0f766e; font-weight: 700; margin: 0; }
   
   /* Cards & Grids */
   .card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,.05); border: 1px solid #e2e8f0; }
-  .grid, .grid-2, .grid-3, .dep-grid, .dep-grid-3 { 
-    display: grid; 
-    grid-template-columns: 1fr; /* Default 1 kolom untuk HP */
-    gap: 12px; 
-    margin-bottom: 12px; 
-  }
+  .grid, .grid-2, .grid-3, .dep-grid, .dep-grid-3 { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 12px; }
   
   /* Forms */
   label { display: block; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 6px; }
-  input, select, textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; background: #f8fafc; transition: all 0.2s; }
+  input, select, textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; background: #f8fafc; }
   input:focus, select:focus { outline: none; border-color: #14b8a6; background: white; box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15); }
-  input:disabled { background: #e2e8f0; color: #94a3b8; cursor: not-allowed; }
   
-  /* Input Groups (Currency) */
   .input-group { display: flex; gap: 0; }
   .input-group input { border-radius: 8px 0 0 8px; border-right: none; min-width: 0; }
   .input-group select.cur { width: 80px; flex-shrink: 0; border-radius: 0 8px 8px 0; font-weight: 700; color: #0f766e; font-size: 13px; padding: 0 5px; }
   
-  /* Info Boxes */
-  .info-box { background: #f0fdfa; border-left: 4px solid #14b8a6; padding: 10px 12px; border-radius: 6px; font-size: 12px; color: #0f766e; margin-bottom: 15px; line-height: 1.4; }
-  .info-box.grup { background: #eef2ff; border-left-color: #6366f1; color: #4338ca; }
-  .info-box.import { background: #fef3c7; border-left-color: #f59e0b; color: #92400e; }
-  .info-box.handling-box { background: #fff7ed; border-left-color: #f97316; color: #9a3412; }
-  
-  /* Specific Sections */
-  .kurs-panel { background: linear-gradient(135deg, #0f766e, #14b8a6); color: white; border-radius: 12px; padding: 15px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 12px; }
-  .kurs-panel label { color: #d1fae5; }
-  .kurs-panel input { background: white; font-weight: 700; color: #0f766e; }
-  .unit-badge { display: none; } /* Hide badge on mobile to save space */
-
-  .makan-toggle { display: flex; flex-direction: column; gap: 8px; padding: 12px; background: #f8fafc; border-radius: 8px; margin-bottom: 12px; border: 1px solid #e2e8f0; }
-  .makan-toggle label { display: flex; align-items: center; justify-content: center; padding: 12px; border-radius: 8px; border: 2px solid #e2e8f0; background: white; cursor: pointer; margin: 0; font-weight: 600; }
-  .makan-toggle label.active { border-color: #0f766e; background: #f0fdfa; color: #0f766e; }
-  .makan-toggle input[type=radio] { display: none; }
-  .makan-toggle label small { display: none; } /* Simplify mobile */
-
-  /* Tombol */
-  .btn { background: #0f766e; color: #fff; border: none; padding: 12px 18px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+  /* Buttons */
+  .btn { background: #0f766e; color: #fff; border: none; padding: 12px 18px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; width: 100%; }
   .btn:hover { background: #115e59; }
   .btn-secondary { background: #e2e8f0; color: #334155; border: 1px solid #cbd5e1; }
   .btn-danger { background: #dc2626; color: white; }
   .btn-duplicate { background: #3b82f6; color: white; }
-  .btn-google { background: #f3f4f6; border: 1px solid #d1d5db; color: #374151; padding: 0 12px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+  .btn-sm { padding: 5px 10px; font-size: 11px; width: auto; }
+  .btn-print { background: #0ea5e9; color: white; }
   
-  /* Tabel Hasil */
+  /* Info Boxes */
+  .info-box { background: #f0fdfa; border-left: 4px solid #14b8a6; padding: 10px 12px; border-radius: 6px; font-size: 12px; color: #0f766e; margin-bottom: 15px; line-height: 1.4; }
+  .info-box.import { background: #fef3c7; border-left-color: #f59e0b; color: #92400e; }
+  .info-box.warning { background: #fee2e2; border-left-color: #ef4444; color: #991b1b; }
+  
+  /* Tables */
   .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 10px; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 400px; /* Agar bisa discroll di HP */ }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 400px; }
   th, td { padding: 10px 8px; border: 1px solid #e2e8f0; text-align: right; }
   th { background: #f1f5f9; text-align: center; font-weight: 700; color: #334155; font-size: 12px; }
   td.left, th.left { text-align: left; }
-  
+
   /* Warna Baris Tabel */
   .hpp-row { background: #dbeafe; font-weight: bold; color: #1e3a8a; }
   .price-row { background: #d1fae5; font-weight: bold; color: #065f46; }
   .total-row { background: #fef3c7; font-weight: bold; }
   .profit-row { background: #ecfdf5; color: #047857; font-weight: bold; border-top: 2px solid #10b981; }
-  .sar-row td { color: #64748b; font-size: 11px; font-style: italic; }
-  .tour-row td { color: #7c3aed; }
-  .group-row td { background: #f8fafc; }
-  .handling-row td { background: #fff7ed; color: #9a3412; }
-  .makan-off-row td { color: #94a3b8; font-style: italic; }
-  
+
+  /* Invoice Custom Styles */
+  .invoice-card { border: 2px solid #0f766e; border-radius: 12px; padding: 20px; background: white; margin-bottom: 20px; }
+  .invoice-header { display: flex; justify-content: space-between; border-bottom: 2px dashed #cbd5e1; padding-bottom: 10px; margin-bottom: 15px; flex-direction: column; gap: 10px; }
+  @media (min-width: 500px) { .invoice-header { flex-direction: row; } }
+  .invoice-title { font-size: 18px; font-weight: bold; color: #0f766e; }
+  .invoice-meta { font-size: 13px; color: #475569; line-height: 1.6; }
+  .terbilang-box { background: #fef3c7; border: 1px solid #fde68a; padding: 10px; font-style: italic; font-weight: bold; color: #92400e; margin: 15px 0; border-radius: 6px; font-size: 14px; }
+
   /* City Tour & Logistik */
   .tour-container { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; padding: 10px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; }
   .tour-item { background: white; border: 1px solid #e2e8f0; padding: 10px; border-radius: 8px; display: flex; flex-direction: column; gap: 8px; }
@@ -98,7 +89,13 @@
   .logistik-fields { display: none; margin-top: 15px; padding: 12px; background: #f1f5f9; border-radius: 8px; }
   .logistik-fields.active { display: block; animation: fadeIn 0.3s ease-in-out; }
 
-  /* Desktop View (Layar Lebar) */
+  /* Tambahan CSS untuk Mode Makan */
+  .makan-toggle { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; margin-bottom: 15px; }
+  .makan-toggle label { display: flex; align-items: center; gap: 8px; padding: 10px 15px; border: 1px solid #cbd5e1; border-radius: 8px; cursor: pointer; background: #f8fafc; font-weight: 600; font-size: 13px; color: #475569; transition: 0.2s; margin: 0; }
+  .makan-toggle label.active { border-color: #0f766e; background: #f0fdfa; color: #0f766e; }
+  .makan-toggle input[type="radio"] { width: 18px; height: 18px; accent-color: #0f766e; margin: 0; }
+  
+  /* Desktop View */
   @media (min-width: 768px) {
     body { padding: 25px; font-size: 14px; }
     .header-top { flex-direction: row; justify-content: space-between; align-items: center; }
@@ -110,308 +107,1387 @@
     .dep-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
     .dep-grid-3 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
     .kurs-panel { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
-    .makan-toggle { flex-direction: row; flex-wrap: wrap; }
+    .makan-toggle { flex-direction: row; }
+    .makan-toggle label { flex: 1; justify-content: center; }
     .tour-container { flex-direction: row; flex-wrap: wrap; }
     .tour-item { flex: 1 1 160px; }
-    .unit-badge { display: flex; }
+    .tab-btn { flex: none; }
   }
 </style>
 </head>
 <body>
 <div class="container">
+  
+  <!-- HEADER & NAVIGATION -->
   <div class="header-top">
     <div>
-      <h1>🕌 Kalkulator HPP Paket Umrah Pro</h1>
-      <p class="sub">Alur Kerja Staf Travel (Setup → Biaya → Logistik → Hasil)</p>
+      <h1>🕌 Sistem Umrah Pro</h1>
+      <p class="sub">Kalkulator HPP · Jadwal · Invoice Pembayaran</p>
     </div>
     <div class="top-actions">
-      <button class="btn btn-secondary" onclick="exportData()" style="background:#10b981; color:white; border:none;">💾 Simpan Data</button>
-      <button class="btn btn-secondary" onclick="triggerImportData()" style="background:#f59e0b; color:white; border:none;">📂 Buka Data</button>
-      <button class="btn btn-secondary" onclick="resetCalculator()">🔄 Reset Form</button>
+      <button class="btn btn-secondary" onclick="exportData()" style="background:#10b981; color:white; border:none;">💾 Backup</button>
+      <button class="btn btn-secondary" onclick="triggerImportData()" style="background:#f59e0b; color:white; border:none;">📂 Restore</button>
+      <button class="btn btn-secondary" onclick="resetAll()">🔄 Reset</button>
       <input type="file" id="importDataFile" accept=".json" onchange="handleImportData(event)" style="display: none;">
     </div>
   </div>
 
-  <!-- LANGKAH 1: SETUP & OTOMASI DASAR -->
-  <div class="step-container">
-    <div class="step-header">
-      <span class="step-badge">Langkah 1</span>
-      <h2 class="step-title">Setup & Otomasi Dasar</h2>
-    </div>
-
-    <div class="card">
-      <div class="info-box" style="background:#f8fafc; border-color:#cbd5e1; color:#475569; font-weight:bold; margin-bottom:15px;">0. Identitas Travel & Provider</div>
-      <div class="grid grid-2">
-        <div><label>Nama Travel / Agency (Sub Agent)</label><input id="travelName" type="text" value="PT. GEMBIRA UMRAH TRAVEL"></div>
-        <div><label>Kontak & Alamat</label><input id="travelContact" type="text" value="Jl. Sudirman No. 123, Jakarta | 0812-3456-7890"></div>
-      </div>
-    </div>
-
-    <div class="kurs-panel">
-      <div style="grid-column: 1 / -1; margin-bottom:5px;"><b>0.1. Kurs Lokal & Mata Uang Default</b></div>
-      <div>
-        <label>Kurs 1 SAR (Riyal Saudi)</label>
-        <div class="input-group">
-          <input id="kursSAR" type="text" inputmode="numeric" value="4.250" class="num-format">
-          <span class="unit-badge" style="background:white; color:#0f766e; padding:10px; border-radius:0 8px 8px 0; font-weight:bold;">IDR</span>
-        </div>
-      </div>
-      <div>
-        <label>Kurs 1 USD (US Dollar)</label>
-        <div class="input-group">
-          <input id="kursUSD" type="text" inputmode="numeric" value="16.200" class="num-format">
-          <span class="unit-badge" style="background:white; color:#0f766e; padding:10px; border-radius:0 8px 8px 0; font-weight:bold;">IDR</span>
-        </div>
-      </div>
-      <div>
-        <label>Mata Uang Default Input</label>
-        <select id="defaultCur" class="cur-select" style="background:white; color:#0f766e; font-weight:bold;">
-          <option value="IDR">IDR — Rupiah</option>
-          <option value="SAR">SAR — Riyal Saudi</option>
-          <option value="USD">USD — US Dollar</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="info-box import">
-        📄 <b>0.5. Import PDF Quotation (Opsional)</b><br>Upload PDF quotation/invoice. Sistem akan <b>mendeteksi biaya</b> otomatis.
-      </div>
-      <div class="grid grid-2">
-        <div>
-          <label>Jenis Paket untuk Import</label>
-          <select id="importPackage">
-            <option value="all">Semua Paket</option>
-            <option value="9">Paket 9 Hari</option>
-            <option value="12">Paket 12 Hari</option>
-            <option value="16">Paket 16 Hari</option>
-          </select>
-        </div>
-        <div>
-          <label>File PDF</label>
-          <input type="file" id="pdfFile" accept=".pdf" onchange="handlePDFUpload(event)" style="padding:10px;">
-        </div>
-      </div>
-      <p class="note" id="pdfSupportNote" style="font-size:12px; margin-top:8px; color:#64748b;"></p>
-    </div>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="openTab('tab-kalkulator')">📊 Kalkulator HPP</button>
+    <button class="tab-btn" onclick="openTab('tab-jadwal')">🗓️ Jadwal Paket</button>
+    <button class="tab-btn" onclick="openTab('tab-invoice')">🧾 Invoice & Pembayaran</button>
   </div>
 
-  <!-- LANGKAH 2: INPUT BIAYA VARIABEL & UTAMA -->
-  <div class="step-container">
-    <div class="step-header">
-      <span class="step-badge">Langkah 2</span>
-      <h2 class="step-title">Input Biaya Variabel & Utama</h2>
-    </div>
-
-    <div class="card">
-      <div class="info-box" style="background:#f8fafc; border-color:#cbd5e1; color:#475569; font-weight:bold; margin-bottom:15px;">1. Biaya Tetap per Pax</div>
-      <div class="grid">
-        <div><label>Visa Umrah</label>
-          <div class="input-group">
-            <input id="visa" type="text" inputmode="numeric" class="num-format" value="1.500.000">
-            <select id="visa-cur" class="cur"><option>IDR</option><option>SAR</option><option>USD</option></select>
-          </div><small class="conv" id="visa-conv" style="display:none;"></small></div>
-        <div><label>Perlengkapan</label>
-          <div class="input-group">
-            <input id="perlengkapan" type="text" inputmode="numeric" class="num-format" value="500.000">
-            <select id="perlengkapan-cur" class="cur"><option>IDR</option><option>SAR</option><option>USD</option></select>
-          </div><small class="conv" id="perlengkapan-conv" style="display:none;"></small></div>
-        <div><label>Asuransi</label>
-          <div class="input-group">
-            <input id="asuransi" type="text" inputmode="numeric" class="num-format" value="200.000">
-            <select id="asuransi-cur" class="cur"><option>IDR</option><option>SAR</option><option>USD</option></select>
-          </div><small class="conv" id="asuransi-conv" style="display:none;"></small></div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="info-box" style="background:#f8fafc; border-color:#cbd5e1; color:#475569; font-weight:bold; margin-bottom:15px;">2. Hotel & Konsumsi</div>
-      <div class="grid grid-2">
-        <div><label>Hotel Makkah / malam</label>
-          <div class="input-group">
-            <input id="rateMakkah" type="text" inputmode="numeric" class="num-format" value="750.000">
-            <select id="rateMakkah-cur" class="cur"><option>IDR</option><option>SAR</option><option>USD</option></select>
-          </div><small class="conv" id="rateMakkah-conv" style="display:none;"></small></div>
-        <div><label>Hotel Madinah / malam</label>
-          <div class="input-group">
-            <input id="rateMadinah" type="text" inputmode="numeric" class="num-format" value="500.000">
-            <select id="rateMadinah-cur" class="cur"><option>IDR</option><option>SAR</option><option>USD</option></select>
-          </div><small class="conv" id="rateMadinah-conv" style="display:none;"></small></div>
+  <!-- ============================================== -->
+  <!-- TAB 1: KALKULATOR HPP                          -->
+  <!-- ============================================== -->
+  <div id="tab-kalkulator" class="tab-content active">
+    
+    <div class="step-container">
+      <div class="step-header"><span class="step-badge">Langkah 1</span><h2 class="step-title">Setup & Otomasi Dasar</h2></div>
+      <div class="card">
+        <div class="info-box" style="background:#f8fafc; border-color:#cbd5e1; color:#475569; font-weight:bold; margin-bottom:15px;">0. Identitas Travel & Provider</div>
+        <div class="grid grid-2">
+          <div><label>Nama Travel / Agency</label><input id="travelName" type="text" value="PT. GEMBIRA UMRAH TRAVEL"></div>
+          <div><label>Kontak & Alamat</label><input id="travelContact" type="text" value="Jl. Sudirman No. 123, Jakarta | 0812-3456-7890"></div>
+        </div>
       </div>
 
-      <div class="makan-toggle">
-        <div style="font-size:12px; font-weight:700; color:#475569; margin-bottom:5px;">🍽️ Mode Makan</div>
-        <label class="active" data-mode="fullboard">
-          <input type="radio" name="makanMode" value="fullboard" checked> Fullboard (Termasuk Hotel)
-        </label>
-        <label data-mode="include">
-          <input type="radio" name="makanMode" value="include"> Include (Dihitung Terpisah)
-        </label>
-      </div>
-
-      <div class="grid" style="opacity:0.5;" id="makanPerDayWrap">
+      <div class="kurs-panel">
+        <div style="grid-column: 1 / -1; margin-bottom:5px;"><b>0.1. Kurs Lokal & Mata Uang Default</b></div>
         <div>
-          <label>Makan / hari / pax <span id="makanStatusLabel" style="color:#92400e;">(nonaktif)</span></label>
+          <label>Kurs 1 SAR (Riyal Saudi)</label>
           <div class="input-group">
-            <input id="makanPerDay" type="text" inputmode="numeric" class="num-format" value="150.000" disabled>
-            <select id="makanPerDay-cur" class="cur" disabled><option>IDR</option><option>SAR</option><option>USD</option></select>
+            <input id="kursSAR" type="text" inputmode="numeric" value="4.250" class="num-format">
+            <span style="background:white; color:#0f766e; padding:10px; border-radius:0 8px 8px 0; font-weight:bold; font-size:12px; display:flex; align-items:center;">IDR</span>
           </div>
-          <small class="conv" id="makanPerDay-conv" style="display:none;"></small>
+        </div>
+        <div>
+          <label>Kurs 1 USD (US Dollar)</label>
+          <div class="input-group">
+            <input id="kursUSD" type="text" inputmode="numeric" value="16.200" class="num-format">
+            <span style="background:white; color:#0f766e; padding:10px; border-radius:0 8px 8px 0; font-weight:bold; font-size:12px; display:flex; align-items:center;">IDR</span>
+          </div>
+        </div>
+        <div>
+          <label>Mata Uang Default Input</label>
+          <select id="defaultCur" class="cur-select" style="background:white; color:#0f766e; font-weight:bold;">
+            <option value="IDR">IDR — Rupiah</option>
+            <option value="SAR">SAR — Riyal Saudi</option>
+            <option value="USD">USD — US Dollar</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-container">
+      <div class="step-header"><span class="step-badge">Langkah 2</span><h2 class="step-title">Input Biaya Variabel & Utama</h2></div>
+      <div class="card">
+        <div class="info-box" style="background:#f8fafc; border-color:#cbd5e1; color:#475569; font-weight:bold; margin-bottom:15px;">1. Biaya Tetap per Pax</div>
+        <div class="grid">
+          <div><label>Visa Umrah</label><div class="input-group"><input id="visa" type="text" inputmode="numeric" class="num-format" value="1.500.000"><select id="visa-cur" class="cur"><option>IDR</option><option>SAR</option><option>USD</option></select></div><small class="conv" id="visa-conv" style="display:none;"></small></div>
+          <div><label>Perlengkapan</label><div class="input-group"><input id="perlengkapan" type="text" inputmode="numeric" class="num-format" value="500.000"><select id="perlengkapan-cur" class="cur"><option>IDR</option><option>SAR</option><option>USD</option></select></div><small class="conv" id="perlengkapan-conv" style="display:none;"></small></div>
+          <div><label>Asuransi</label><div class="input-group"><input id="asuransi" type="text" inputmode="numeric" class="num-format" value="200.000"><select id="asuransi-cur" class="cur"><option>IDR</option><option>SAR</option><option>USD</option></select></div><small class="conv" id="asuransi-conv" style="display:none;"></small></div>
         </div>
       </div>
 
-      <div class="info-box" style="background:#fee2e2; border-color:#ef4444; color:#991b1b; margin-top:15px; margin-bottom:0;">
-        🛏️ <b>Info Kamar:</b> Harga di atas adalah untuk tipe kamar <b>QUAD (4 orang/kamar)</b>.
-      </div>
-    </div>
-  </div>
-
-  <!-- LANGKAH 3: INPUT LOGISTIK & OPERASIONAL GRUP -->
-  <div class="step-container">
-    <div class="step-header">
-      <span class="step-badge">Langkah 3</span>
-      <h2 class="step-title">Input Logistik & Operasional</h2>
-    </div>
-
-    <div class="card">
-      <div class="info-box" style="background:#f8fafc; border-color:#cbd5e1; color:#475569; font-weight:bold; margin-bottom:15px;">3. Biaya Grup & Muthawif</div>
-      <div class="grid grid-2">
-        <div><label>Transport Bus / Airport (TOTAL grup)</label>
-          <div class="input-group">
-            <input id="transport" type="text" inputmode="numeric" class="num-format" value="45.000.000">
-            <select id="transport-cur" class="cur"><option>IDR</option><option>SAR</option><option>USD</option></select>
-          </div><small class="conv" id="transport-conv" style="display:none;"></small></div>
+      <div class="card">
+        <div class="info-box" style="background:#f8fafc; border-color:#cbd5e1; color:#475569; font-weight:bold; margin-bottom:15px;">2. Hotel & Konsumsi</div>
+        <div class="grid grid-2">
+          <div><label>Hotel Makkah / malam</label><div class="input-group"><input id="rateMakkah" type="text" inputmode="numeric" class="num-format" value="750.000"><select id="rateMakkah-cur" class="cur"><option>IDR</option><option>SAR</option><option>USD</option></select></div><small class="conv" id="rateMakkah-conv" style="display:none;"></small></div>
+          <div><label>Hotel Madinah / malam</label><div class="input-group"><input id="rateMadinah" type="text" inputmode="numeric" class="num-format" value="500.000"><select id="rateMadinah-cur" class="cur"><option>IDR</option><option>SAR</option><option>USD</option></select></div><small class="conv" id="rateMadinah-conv" style="display:none;"></small></div>
+        </div>
         
-        <div><label>Muthawif / Guide (Harga per HARI)</label>
-          <div class="input-group">
-            <input id="muthawifPerDay" type="text" inputmode="numeric" class="num-format" value="250">
-            <select id="muthawifPerDay-cur" class="cur"><option>IDR</option><option>SAR</option><option>USD</option></select>
-          </div><small class="conv" id="muthawifPerDay-conv" style="display:none;"></small>
-          <small class="note">Total = Harga × Jml Hari ÷ Pax</small>
+        <!-- PERBAIKAN: Menambahkan onchange pada radio button -->
+        <div class="makan-toggle">
+          <div style="font-size:12px; font-weight:700; color:#475569; margin-bottom:5px; width:100%;">🍽️ Mode Makan</div>
+          <label class="active" data-mode="fullboard">
+            <input type="radio" name="makanMode" value="fullboard" checked onchange="updateMakanUI('fullboard')"> Fullboard (Termasuk Hotel)
+          </label>
+          <label data-mode="include">
+            <input type="radio" name="makanMode" value="include" onchange="updateMakanUI('include')"> Include (Dihitung Terpisah)
+          </label>
+        </div>
+        
+        <div class="grid" style="opacity:0.5;" id="makanPerDayWrap">
+          <div><label>Makan / hari / pax</label><div class="input-group"><input id="makanPerDay" type="text" inputmode="numeric" class="num-format" value="150.000" disabled><select id="makanPerDay-cur" class="cur" disabled><option>IDR</option><option>SAR</option><option>USD</option></select></div></div>
         </div>
       </div>
     </div>
 
-    <div class="card">
-      <div class="info-box" style="background:#f8fafc; border-color:#cbd5e1; color:#475569; font-weight:bold; margin-bottom:15px;">4. Handling Service (Vendor)</div>
-      <div class="grid" style="grid-template-columns: 1fr; align-items: start; gap: 15px;">
-        <div>
-          <label>Pilih Paket Handling</label>
-          <select id="handlingTier" style="font-weight:700; color:#c2410c;">
-            <option value="none">TANPA HANDLING</option>
-            <option value="basic">BASIC</option>
-            <option value="premium" selected>PREMIUM</option>
-            <option value="vip">VIP</option>
+    <div class="step-container">
+      <div class="step-header"><span class="step-badge">Langkah 3</span><h2 class="step-title">Input Logistik & Operasional</h2></div>
+      <div class="card">
+        <div class="info-box" style="background:#f8fafc; border-color:#cbd5e1; color:#475569; font-weight:bold; margin-bottom:15px;">3. Biaya Grup & Muthawif</div>
+        <div class="grid grid-2">
+          <div><label>Transport Bus (TOTAL grup)</label><div class="input-group"><input id="transport" type="text" inputmode="numeric" class="num-format" value="45.000.000"><select id="transport-cur" class="cur"><option>IDR</option><option>SAR</option><option>USD</option></select></div></div>
+          <div><label>Muthawif (Harga per HARI)</label><div class="input-group"><input id="muthawifPerDay" type="text" inputmode="numeric" class="num-format" value="250"><select id="muthawifPerDay-cur" class="cur"><option>IDR</option><option>SAR</option><option>USD</option></select></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="info-box" style="background:#f8fafc; border-color:#cbd5e1; color:#475569; font-weight:bold; margin-bottom:15px;">4. Handling Service (Vendor)</div>
+        <div class="grid">
+          <div>
+            <label>Pilih Paket Handling</label>
+            <!-- PERBAIKAN: Menambahkan onchange pada select -->
+            <select id="handlingTier" onchange="updateHandlingFeatures()" style="font-weight:700; color:#c2410c;">
+              <option value="none">TANPA HANDLING</option>
+              <option value="basic">BASIC</option>
+              <option value="premium" selected>PREMIUM</option>
+              <option value="vip">VIP</option>
+            </select>
+          </div>
+          <div id="handlingFeaturesDisplay" style="font-size:12px; background:#fffbeb; border:1px solid #fde68a; padding:10px; border-radius:8px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-container">
+      <div class="step-header"><span class="step-badge">Langkah 4</span><h2 class="step-title">Biaya Internal & Kontingensi</h2></div>
+      <div class="card">
+        <div class="grid grid-2">
+          <div><label>Overhead (%)</label><input id="overhead" type="number" value="5"></div>
+          <div><label>Margin Keuntungan (%)</label><input id="margin" type="number" value="20"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-container">
+      <div class="step-header"><span class="step-badge">Langkah 5</span><h2 class="step-title">Data Keberangkatan</h2></div>
+      <div class="card">
+        <div class="info-box" style="background:#f8fafc; border-color:#cbd5e1; color:#475569; font-weight:bold; margin-bottom:15px;">5. Daftar Keberangkatan</div>
+        <div id="departures"></div>
+        <button class="btn" onclick="addDeparture()" style="margin-top:10px;">+ Tambah Keberangkatan</button>
+      </div>
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
+          <span style="font-weight:bold; color:#475569;">6. Hasil Perhitungan HPP</span>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <label style="margin:0; font-size:13px;">Tampilkan:</label>
+            <select id="viewPkgSelect" onchange="syncPkgSelect(this.value); calculate();" style="padding:6px 10px; font-weight:bold; color:#0f766e; border-color:#0f766e;">
+              <option value="9">Paket 9 Hari</option><option value="12">Paket 12 Hari</option><option value="16">Paket 16 Hari</option>
+            </select>
+          </div>
+        </div>
+        <div id="results"></div>
+      </div>
+    </div>
+
+    <div class="step-container">
+      <div class="step-header"><span class="step-badge">Langkah 6</span><h2 class="step-title">Persetujuan & Cetak</h2></div>
+      <div class="card">
+        <div class="info-box" style="background:#eff6ff; border-color:#3b82f6; color:#1e40af;">📝 Pilih keberangkatan dan paket yang disepakati, lalu cetak dokumen resmi.</div>
+        <div class="grid grid-2">
+          <div><label>Pilih Keberangkatan</label><select id="exportDepSelect"></select></div>
+          <div><label>Pilih Paket</label><select id="exportPkgSelect" onchange="syncPkgSelect(this.value); calculate();"><option value="9">Paket 9 Hari</option><option value="12">Paket 12 Hari</option><option value="16">Paket 16 Hari</option></select></div>
+        </div>
+        <div style="margin-top: 15px; background:#f8fafc; padding:12px; border-radius:8px; border:1px dashed #cbd5e1;">
+          <label>Tujuan Surat Penawaran</label>
+          <select id="exportTargetType" style="font-weight:bold; color:#0f766e;">
+            <option value="jamaah">Untuk Calon Jamaah (Individu)</option>
+            <option value="owner">Untuk Owner / Pimpinan Travel</option>
           </select>
         </div>
-        <div id="handlingFeaturesDisplay" class="handling-features" style="font-size:12px; background:#fffbeb; border:1px solid #fde68a; padding:10px; border-radius:8px;"></div>
+        <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
+          <button class="btn" style="background:#2563eb;" onclick="exportSurat()">📄 Cetak Surat Penawaran</button>
+          <button class="btn" style="background:#0ea5e9;" onclick="exportItinerary()">📅 Cetak Itinerary</button>
+          <button class="btn" style="background:#8b5cf6;" onclick="exportPaketInfo()">📋 Cetak Info Paket (Logistik)</button>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- LANGKAH 4: BIAYA INTERNAL & KONTINGENSI -->
-  <div class="step-container">
-    <div class="step-header">
-      <span class="step-badge">Langkah 4</span>
-      <h2 class="step-title">Biaya Internal & Kontingensi</h2>
-    </div>
-
+  <!-- ============================================== -->
+  <!-- TAB 2: JADWAL PAKET                            -->
+  <!-- ============================================== -->
+  <div id="tab-jadwal" class="tab-content">
     <div class="card">
+      <h2 style="margin-top:0; color:#0f766e;">🗓️ Master Jadwal & Harga Paket</h2>
+      <div class="info-box">Masukkan data paket Anda di sini. Data ini tersimpan di browser dan bisa dipanggil saat membuat Invoice.</div>
+      
+      <div class="grid grid-2" style="background:#f8fafc; padding:15px; border-radius:8px; border:1px solid #e2e8f0; margin-bottom:20px;">
+        <div style="grid-column: 1 / -1;"><label>Nama Paket / Periode</label><input type="text" id="jdwNama" placeholder="Contoh: Umroh Reguler 9 Hari (Januari)"></div>
+        <div><label>Tanggal Keberangkatan</label><input type="date" id="jdwTanggal"></div>
+        <div><label>Kuota (Pax)</label><input type="number" id="jdwKuota" placeholder="45"></div>
+        <div><label>Harga Quad (Rp)</label><input type="text" id="jdwQuad" class="num-format" placeholder="25.000.000"></div>
+        <div><label>Harga Triple (Rp)</label><input type="text" id="jdwTriple" class="num-format" placeholder="28.000.000"></div>
+        <div><label>Harga Double (Rp)</label><input type="text" id="jdwDouble" class="num-format" placeholder="32.000.000"></div>
+      </div>
+      <button class="btn" onclick="addJadwal()" style="margin-bottom:20px; background:#2563eb;">+ Tambah ke Jadwal</button>
+
+      <div class="table-responsive">
+        <table id="tabelJadwal">
+          <thead>
+            <tr>
+              <th class="left">Nama Paket</th>
+              <th>Tgl Berangkat</th>
+              <th>Quad</th>
+              <th>Triple</th>
+              <th>Double</th>
+              <th>Kuota</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyJadwal">
+            <!-- Diisi via JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- TAB 3: INVOICE & PEMBAYARAN                    -->
+  <!-- ============================================== -->
+  <div id="tab-invoice" class="tab-content">
+    
+    <!-- Form Buat Invoice Baru -->
+    <div class="card">
+      <h2 style="margin-top:0; color:#0f766e;">🧾 Buat / Edit Invoice</h2>
+      <div class="info-box warning">
+        <b>Biaya Upgrade Kamar (Hotel Bintang 3 - Low Season):</b><br>
+        • <b>DOUBLE</b>: 9D (Rp 2.750.000) | 12D (Rp 4.500.000) | 16D (Rp 6.500.000)<br>
+        • <b>TRIPLE</b>: 9D (Rp 1.500.000) | 12D (Rp 2.500.000) | 16D (Rp 4.000.000)
+      </div>
+      
       <div class="grid grid-2">
-        <div><label>Overhead (%)</label>
-          <input id="overhead" type="number" value="5"></div>
-        <div><label>Margin Keuntungan (%)</label>
-          <input id="margin" type="number" value="20"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- LANGKAH 5: VALIDASI & DATA KEBERANGKATAN -->
-  <div class="step-container">
-    <div class="step-header">
-      <span class="step-badge">Langkah 5</span>
-      <h2 class="step-title">Data Keberangkatan</h2>
-    </div>
-
-    <div class="card">
-      <div class="info-box" style="background:#f8fafc; border-color:#cbd5e1; color:#475569; font-weight:bold; margin-bottom:15px;">5. Daftar Keberangkatan</div>
-      <div id="departures"></div>
-      <button class="btn" onclick="addDeparture()" style="width:100%; margin-top:10px;">+ Tambah Keberangkatan</button>
-    </div>
-
-    <div class="card">
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
-        <span style="font-weight:bold; color:#475569;">6. Hasil Perhitungan HPP</span>
-        <div style="display:flex; align-items:center; gap:8px;">
-          <label style="margin:0; font-size:13px;">Tampilkan:</label>
-          <select id="viewPkgSelect" onchange="syncPkgSelect(this.value); calculate();" style="padding:6px 10px; font-weight:bold; color:#0f766e; border-color:#0f766e;">
-            <option value="9">Paket 9 Hari</option>
-            <option value="12">Paket 12 Hari</option>
-            <option value="16">Paket 16 Hari</option>
+        <div>
+          <label>Tipe Penerima Invoice</label>
+          <select id="invRecipientType" style="font-weight:bold; color:#0f766e;">
+            <option value="jamaah">Individu (Jamaah)</option>
+            <option value="owner">Owner / Agency</option>
           </select>
         </div>
-      </div>
-      <div id="results"></div>
-    </div>
-  </div>
-
-  <!-- LANGKAH 6: INTEGRASI WORKFLOW & CETAK -->
-  <div class="step-container">
-    <div class="step-header">
-      <span class="step-badge">Langkah 6</span>
-      <h2 class="step-title">Persetujuan & Cetak</h2>
-    </div>
-
-    <div class="card">
-      <div class="info-box" style="background:#eff6ff; border-color:#3b82f6; color:#1e40af;">
-        📝 Pilih keberangkatan dan paket yang telah <b>disepakati</b> dengan pelanggan, lalu cetak dokumen resmi.
-      </div>
-      <div class="grid grid-2">
-        <div>
-          <label>Pilih Keberangkatan</label>
-          <select id="exportDepSelect"></select>
-        </div>
-        <div>
-          <label>Pilih Paket Disepakati</label>
-          <select id="exportPkgSelect" onchange="syncPkgSelect(this.value); calculate();">
-            <option value="9">Paket 9 Hari</option>
-            <option value="12">Paket 12 Hari</option>
-            <option value="16">Paket 16 Hari</option>
+        <div><label>Nomor Invoice</label><input type="text" id="invNomor" placeholder="INV-2024-001"></div>
+        <div><label>Nama Penerima</label><input type="text" id="invNama" placeholder="Budi Santoso / PT. Travel"></div>
+        <div><label>Nomor HP</label><input type="text" id="invHP" placeholder="0812..."></div>
+        <div><label>Pilih Paket dari Jadwal</label><select id="invPaketSelect" onchange="pilihPaketInvoice()"><option value="">-- Pilih Paket --</option></select></div>
+        
+        <div><label>Durasi Paket</label>
+          <select id="invDurasi" onchange="hitungTotalInvoice()">
+            <option value="9">9 Hari</option>
+            <option value="12">12 Hari</option>
+            <option value="16">16 Hari</option>
           </select>
         </div>
+        <div><label>Tipe Kamar</label>
+          <select id="invTipeKamar" onchange="hitungTotalInvoice()">
+            <option value="quad">Quad (Tanpa Upgrade)</option>
+            <option value="triple">Triple</option>
+            <option value="double">Double</option>
+          </select>
+        </div>
+        <div><label>Jumlah Pax (Orang)</label><input type="number" id="invPax" value="1" onchange="hitungTotalInvoice()"></div>
+        
+        <!-- Input Harga -->
+        <div style="background:#f0fdfa; padding:10px; border-radius:8px; border:1px solid #ccfbf1;">
+          <label>Harga Dasar / pax (Quad)</label>
+          <input type="text" id="invBaseHarga" class="num-format" placeholder="0" onchange="hitungTotalInvoice()">
+        </div>
+        <div style="background:#fef3c7; padding:10px; border-radius:8px; border:1px solid #fde68a;">
+          <label>Biaya Upgrade / pax</label>
+          <input type="text" id="invUpgradeCost" class="num-format" placeholder="0" onchange="hitungTotalInvoice()">
+        </div>
+        
+        <div style="grid-column: 1 / -1;">
+          <label>Total Tagihan (Rp) - Otomatis</label>
+          <input type="text" id="invTotalHarga" class="num-format" style="font-weight:bold; font-size:18px; color:#0f766e; background:#ecfdf5;" readonly>
+        </div>
       </div>
-      <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
-        <button class="btn" style="background:#2563eb; padding:14px;" onclick="exportSurat()">📄 Cetak Surat Penawaran</button>
-        <button class="btn" style="background:#0ea5e9; padding:14px;" onclick="exportItinerary()">📅 Cetak Itinerary</button>
-        <button class="btn" style="background:#8b5cf6; padding:14px;" onclick="exportPaketInfo()">📋 Cetak Info Paket (Logistik)</button>
+      <button class="btn" onclick="simpanInvoice()" style="margin-top:15px; background:#0f766e;">💾 Simpan Invoice</button>
+    </div>
+
+    <!-- Cari Pembayaran & Detail -->
+    <div class="card">
+      <h2 style="margin-top:0; color:#0f766e;">🔍 Cek Data Pembayaran</h2>
+      <div class="grid" style="grid-template-columns: 2fr 1fr; gap:10px; align-items:end;">
+        <div><label>Masukkan Nomor Invoice</label><input type="text" id="cariInvoice" placeholder="INV-2024-001"></div>
+        <button class="btn" onclick="cariDataInvoice()" style="height:42px; background:#f59e0b;">Cek</button>
       </div>
     </div>
-  </div>
 
-</div>
+    <!-- Hasil Tampilan Invoice -->
+    <div id="hasilInvoiceContainer" style="display:none;">
+      <div class="invoice-card">
+        <div class="invoice-header">
+          <div>
+            <div class="invoice-title" id="viewInvTitle">INVOICE TAGIHAN</div>
+            <div class="invoice-meta">
+              No: <span id="viewInvNomor" style="font-weight:bold;"></span><br>
+              Tanggal: <span id="viewInvTanggal"></span>
+            </div>
+          </div>
+          <div style="text-align:left;">
+            <div class="invoice-meta">
+              <span id="viewInvLabelPenerima" style="font-weight:bold; color:#0f766e; display:block; margin-bottom:4px;"></span>
+              <b id="viewInvNama" style="font-size:15px;"></b><br>
+              <span id="viewInvHP"></span>
+            </div>
+          </div>
+          <div style="text-align:right; align-self:flex-start;">
+             <button class="btn btn-print" onclick="cetakInvoice()" style="padding:6px 12px; font-size:12px;">🖨️ Cetak Invoice</button>
+          </div>
+        </div>
+        
+        <table style="margin-bottom:15px; font-size:14px; width:100%;">
+          <tr><td class="left"><b>Paket Umrah</b></td><td id="viewInvPaket"></td></tr>
+          <tr><td class="left"><b>Tipe Kamar</b></td><td id="viewInvKamar" style="text-transform:uppercase;"></td></tr>
+          <tr id="rowInvPax"><td class="left"><b>Jumlah Jamaah</b></td><td id="viewInvPax"></td></tr>
+          <tr id="rowInvBase"><td class="left">Harga Dasar / pax (Quad)</td><td id="viewInvBase"></td></tr>
+          <tr id="rowInvUpgrade"><td class="left">Biaya Upgrade / pax</td><td id="viewInvUpgrade"></td></tr>
+          <tr id="rowInvPerPax" style="background:#ecfdf5;">
+            <td class="left"><b>Harga per Pax</b></td>
+            <td id="viewInvPerPax" style="font-weight:bold; color:#047857;"></td>
+          </tr>
+          <tr style="background:#e2e8f0;"><td class="left"><b>TOTAL TAGIHAN</b></td><td id="viewInvTotal" style="font-weight:bold; font-size:16px;"></td></tr>
+        </table>
 
-<!-- Modal Preview PDF -->
-<div id="pdfModal" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(15,23,42,0.65); z-index:9999; justify-content:center; align-items:center; padding:15px;">
-  <div class="modal-box" style="background:white; border-radius:12px; padding:20px; max-width:900px; width:100%; max-height:90vh; overflow-y:auto;">
-    <h3 style="margin-top:0;">📄 Preview Import PDF</h3>
-    <div id="pdfResults"></div>
-    <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:15px; padding-top:15px; border-top:1px solid #e2e8f0;">
-      <button class="btn btn-secondary" onclick="closePDFModal()">Batal</button>
-      <button class="btn" onclick="applyPDFImport()">✓ Terapkan</button>
+        <h4 style="margin-bottom:10px; color:#0f766e;">Riwayat Pembayaran:</h4>
+        <div class="table-responsive">
+          <table id="tabelPembayaran">
+            <thead><tr><th>Tanggal</th><th>Keterangan</th><th>Metode</th><th>Jumlah</th><th>Aksi</th></tr></thead>
+            <tbody id="tbodyPembayaran"></tbody>
+          </table>
+        </div>
+        
+        <div class="grid grid-3" style="margin-top:10px;">
+          <div><input type="date" id="payTanggal"></div>
+          <div><input type="text" id="payKet" placeholder="DP / Cicilan 1"></div>
+          <div>
+            <select id="payMetode" style="font-weight:bold; color:#0f766e;">
+              <option value="Cash">Cash / Tunai</option>
+              <option value="Transfer Bank">Transfer Bank</option>
+            </select>
+          </div>
+          <div><input type="text" id="payJumlah" class="num-format" placeholder="Nominal (Rp)"></div>
+          <div><button class="btn" onclick="tambahPembayaran()" style="background:#10b981; height:42px;">+ Catat Pembayaran</button></div>
+        </div>
+
+        <div class="terbilang-box" id="viewTerbilang">Terbilang: -</div>
+
+        <table style="font-size:14px;">
+          <tr><td class="left">Total Dibayar</td><td id="viewTotalBayar"></td></tr>
+          <tr class="total-row"><td class="left">Sisa Tagihan</td><td id="viewSisaTagihan"></td></tr>
+        </table>
+      </div>
     </div>
+
   </div>
+
 </div>
 
 <!-- Loading -->
-<div id="loadingOverlay" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(15,23,42,0.65); z-index:9999; justify-content:center; align-items:center;">
+<div id="loadingOverlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(15,23,42,0.65); z-index:9999; justify-content:center; align-items:center;">
   <div style="background:white; border-radius:12px; padding:30px 40px; text-align:center;">
     <div style="width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top-color: #0f766e; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px;"></div>
-    <div class="loading-text" style="color:#64748b; font-size:13px; font-weight:600;">Memproses PDF...</div>
+    <div class="loading-text" style="color:#64748b; font-size:13px; font-weight:600;">Memproses...</div>
   </div>
 </div>
 <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
 
-<!-- Template Surat Penawaran -->
+<script>
+// @ts-nocheck
+
+/* ===== TAB NAVIGATION ===== */
+function openTab(tabName) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById(tabName).classList.add('active');
+  event.currentTarget.classList.add('active');
+  
+  if(tabName === 'tab-invoice') {
+    renderPilihanPaketInvoice();
+  }
+}
+
+/* ===== FUNGSI UTAMA (KALKULATOR HPP) ===== */
+const PACKAGES = { '9': { makkah: 4, madinah: 3, days: 9, label: 'Paket 9 Hari' }, '12': { makkah: 6, madinah: 4, days: 12, label: 'Paket 12 Hari' }, '16': { makkah: 6, madinah: 8, days: 16, label: 'Paket 16 Hari' } };
+const TOURS = [ { id: 'alula', name: 'Al Ula', city: 'Madinah', defaultPrice: '5.000.000' }, { id: 'jabalmagnet', name: 'Jabal Magnet', city: 'Madinah', defaultPrice: '2.000.000' }, { id: 'percetakan', name: 'Percetakan Al-Quran', city: 'Madinah', defaultPrice: '1.500.000' }, { id: 'taif', name: 'Taif', city: 'Makkah', defaultPrice: '4.000.000' }, { id: 'hudaibiyah', name: 'Hudaibiyah', city: 'Makkah', defaultPrice: '1.200.000' }, { id: 'jeddah', name: 'Jeddah', city: 'Makkah', defaultPrice: '3.500.000' } ];
+const HANDLING_DATA = { basic: { name: 'BASIC', features: ['Welcome drink', 'Handling bandara', 'Meal box', 'Handling hotel', 'Distribusi koper', 'Greeting card', 'Snack hemat', 'Tips porter', 'Tips bellboy', 'Tips mandub', 'Tips supir', 'Air Zamzam 5L', 'Dokumentasi', 'Opsional Mutawwif'], notIncluded: ['Mutawwif & Mutawwifah Raudhah'], notes: ['Mutawwif: 250 SAR/hari', 'Mutawwifah: 200 SAR/hari', 'Jasa dorong umrah: 350 SAR'], prices: { '4-7': 366, '8-11': 182, '12-15': 128, '16-19': 102, '20-23': 87, '24-27': 77, '28-31': 70, '32-35': 65, '36-39': 61, '40-43': 58, '44-47': 55 } }, premium: { name: 'PREMIUM', features: ['Semua fasilitas paket Basic', 'X-Banner penyambutan', 'Mealbox (Al Baik)', 'Snack premium', 'Parcel buah', 'Air Mineral'], notIncluded: ['Mutawwif & Mutawwifah Raudhah'], notes: ['Mutawwif: 250 SAR/hari', 'Mutawwifah: 200 SAR/hari', 'Jasa dorong umrah: 350 SAR'], prices: { '4-7': 390, '8-11': 203, '12-15': 148, '16-19': 122, '20-23': 107, '24-27': 97, '28-31': 90, '32-35': 85, '36-39': 81, '40-43': 78, '44-47': 75 } }, vip: { name: 'VIP', features: ['Semua fasilitas paket Basic', 'X-Banner penyambutan', 'Arabian Kuliner', 'Snack VIP', 'Parcel buah VIP', 'Air Zamzam 1 galon', 'Gratis Al Baik'], notIncluded: ['Mutawwif & Mutawwifah Raudhah'], notes: ['Mutawwif: 250 SAR/hari', 'Mutawwifah: 200 SAR/hari', 'Jasa dorong umrah: 350 SAR'], prices: { '4-7': 600, '8-11': 317, '12-15': 234, '16-19': 195, '20-23': 171, '24-27': 156, '28-31': 146, '32-35': 138, '36-39': 132, '40-43': 127, '44-47': 123 } } };
+
+let latestDepartures = []; 
+function formatNumberInput(input) { let value = input.value.replace(/[^0-9]/g, ''); input.value = value ? parseInt(value, 10).toLocaleString('id-ID') : ''; }
+function parseRupiah(str) { return !str ? 0 : parseFloat(str.replace(/\./g, '')) || 0; }
+function val(id) { const el = document.getElementById(id); return el ? parseRupiah(el.value) : 0; }
+const fmt = n => 'Rp ' + Math.round(n).toLocaleString('id-ID');
+
+function attachNumberFormatters() {
+  document.querySelectorAll('.num-format').forEach(input => {
+    input.type = 'text'; input.setAttribute('inputmode', 'numeric');
+    input.removeEventListener('input', handleFormat); input.addEventListener('input', handleFormat);
+  });
+}
+function handleFormat(e) { formatNumberInput(e.target); e.target.dispatchEvent(new Event('change', { bubbles: true })); }
+
+function getRates() { return { IDR: 1, SAR: val('kursSAR') || 1, USD: val('kursUSD') || 1 }; }
+function toIDR(id) { const amount = val(id); const curEl = document.getElementById(id + '-cur'); return !curEl ? amount : amount * (getRates()[curEl.value] || 1); }
+function getMakanMode() { return document.querySelector('input[name="makanMode"]:checked').value; }
+function syncPkgSelect(val) { document.getElementById('viewPkgSelect').value = val; document.getElementById('exportPkgSelect').value = val; }
+
+function getHandlingPriceUSD(pax, tier) {
+  const p = HANDLING_DATA[tier].prices;
+  if (pax <= 7) return p['4-7']; if (pax <= 11) return p['8-11']; if (pax <= 15) return p['12-15']; if (pax <= 19) return p['16-19']; if (pax <= 23) return p['20-23']; if (pax <= 27) return p['24-27']; if (pax <= 31) return p['28-31']; if (pax <= 35) return p['32-35']; if (pax <= 39) return p['36-39']; if (pax <= 43) return p['40-43']; return p['44-47'];
+}
+
+function updateHandlingFeatures() {
+  const tier = document.getElementById('handlingTier').value;
+  const container = document.getElementById('handlingFeaturesDisplay');
+  if (tier === 'none') { container.innerHTML = '<div style="text-align: center; color: #64748b; padding: 10px;">Tanpa layanan Handling Vendor.</div>'; calculate(); return; }
+  const data = HANDLING_DATA[tier];
+  container.innerHTML = `<div><span style="font-weight:700; color:#b45309;">✅ Termasuk:</span><ul style="margin:0; padding-left:18px; color:#4b5563;">${data.features.map(f => `<li>${f}</li>`).join('')}</ul></div><div style="margin-top:10px;"><span style="font-weight:700; color:#dc2626;">❌ Tidak Termasuk:</span><ul style="margin:0; padding-left:18px; color:#dc2626;">${data.notIncluded.map(f => `<li>${f}</li>`).join('')}</ul><span style="font-weight:700; color:#b45309; margin-top: 8px; display:block;">📌 Catatan:</span><div style="color: #92400e; font-style: italic; font-size: 11px; background: #fef3c7; padding: 6px; border-radius: 4px;">${data.notes.map(n => '• ' + n).join('<br>')}</div></div>`;
+  calculate();
+}
+
+function updateMakanUI(mode) {
+  document.querySelectorAll('.makan-toggle label').forEach(l => l.classList.toggle('active', l.dataset.mode === mode));
+  const isFullboard = mode === 'fullboard';
+  const inp = document.getElementById('makanPerDay'), sel = document.getElementById('makanPerDay-cur'), wrap = document.getElementById('makanPerDayWrap');
+  inp.disabled = isFullboard; sel.disabled = isFullboard;
+  wrap.style.opacity = isFullboard ? '0.4' : '1'; wrap.style.pointerEvents = isFullboard ? 'none' : 'auto';
+  calculate();
+}
+
+function calculateDates(startDateStr, firstCity, makkahNights, madinahNights) {
+  if (!startDateStr) return { mIn: '-', mOut: '-', dIn: '-', dOut: '-' };
+  let current = new Date(startDateStr);
+  const format = (d) => d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }).replace(/\./g, '-');
+  let mIn, mOut, dIn, dOut;
+  if (firstCity === 'makkah') {
+    mIn = new Date(current); current.setDate(current.getDate() + makkahNights); mOut = new Date(current);
+    dIn = new Date(current); current.setDate(current.getDate() + madinahNights); dOut = new Date(current);
+  } else {
+    dIn = new Date(current); current.setDate(current.getDate() + madinahNights); dOut = new Date(current);
+    mIn = new Date(current); current.setDate(current.getDate() + makkahNights); mOut = new Date(current);
+  }
+  return { mIn: format(mIn), mOut: format(mOut), dIn: format(dIn), dOut: format(dOut) };
+}
+
+function addDeparture(name = '', flight = '', pax = '', airline = '', hotelMakkah = '', hotelMadinah = '', firstCity = 'madinah', flightNo = '') {
+  const wrap = document.getElementById('departures');
+  const block = document.createElement('div');
+  block.className = 'dep-block';
+  block.style.cssText = 'background:#f8fafc; padding:15px; border-radius:8px; border:1px solid #e2e8f0; margin-bottom:15px;';
+  const def = document.getElementById('defaultCur').value;
+  
+  const tourHTML = TOURS.map(t => `
+    <div class="tour-item">
+      <label><input type="checkbox" class="tour-cb" data-tour="${t.id}" onchange="toggleTourInput(this)"> ${t.name}</label>
+      <div class="tour-price-wrap"><div class="input-group"><input type="text" class="tour-price num-format" data-tour="${t.id}" value="${t.defaultPrice}"><select class="tour-cur cur" data-tour="${t.id}" onchange="calculate()"><option>IDR</option><option>SAR</option><option>USD</option></select></div></div>
+    </div>`).join('');
+
+  block.innerHTML = 
+    `<div class="dep-grid">
+      <div><label>Tanggal Berangkat</label><input class="dep-date" type="date" value="${name}"></div>
+      <div><label>No. Penerbangan</label><div style="display:flex; gap:4px;"><input class="dep-flight-no" value="${flightNo}" placeholder="SV 817"><a href="#" class="btn-google" onclick="searchFlight(this)" style="background:#f3f4f6; border:1px solid #d1d5db; padding:0 12px; border-radius:8px; display:flex; align-items:center; justify-content:center; text-decoration:none;">🔍</a></div></div>
+      <div><label>Maskapai</label><input class="dep-airline" value="${airline}" placeholder="Saudi Airlines"></div>
+      <div><label>Kota Pertama</label><select class="dep-first-city"><option value="madinah" ${firstCity==='madinah'?'selected':''}>Madinah Dulu</option><option value="makkah" ${firstCity==='makkah'?'selected':''}>Makkah Dulu</option></select></div>
+      <div><label>Pax Dewasa</label><input class="dep-pax" type="number" value="${pax}"></div>
+      <div><label>Pax Anak</label><input class="dep-child" type="number" value="0"></div>
+      <div><label>Harga Tiket / pax</label><div class="input-group"><input class="dep-flight num-format" type="text" inputmode="numeric" value="${flight}"><select class="dep-cur cur"><option>IDR</option><option>SAR</option><option>USD</option></select></div><small class="conv dep-conv" style="display:none;"></small></div>
+      <div style="display:flex; gap:5px; margin-top: 15px;"><button class="btn btn-duplicate" onclick="duplicateDeparture(this)" style="flex:1;">📋 Duplikat</button><button class="btn btn-danger" onclick="this.closest('.dep-block').remove(); calculate();" style="flex:1;">Hapus</button></div>
+    </div>
+    <div style="margin-top:15px;"><div style="font-size:12px; font-weight:bold; color:#0f766e; margin-bottom:8px;">Tambahan City Tour:</div><div class="tour-container">${tourHTML}</div></div>
+    <div class="logistik-toggle-area"><label style="display:inline-flex; align-items:center; gap:8px; cursor:pointer; font-weight:600; font-size:13px; color:#0f766e;"><input type="checkbox" onchange="toggleLogistik(this)" style="width:18px; height:18px;"> Tampilkan Data Logistik</label></div>
+    <div class="logistik-fields">
+      <div class="dep-grid"><div><label>Provider</label><input class="dep-provider" value="AL HARAMAIN TOURS"></div><div><label>Muasasah</label><input class="dep-muasasah" value="Muasasah Al Rajhi"></div></div>
+      <div class="dep-grid"><div><label>Tour Leader</label><input class="dep-tour-leader" value="H. Hikam"></div><div><label>No. Jawal</label><input class="dep-jawal" value="+6281295957313"></div></div>
+      <div class="dep-grid"><div><label>Local Contact</label><input class="dep-local-name" value="Abdul Ghani"></div><div><label>No. HP</label><input class="dep-local-phone" value="+6287781511313"></div></div>
+      <div class="dep-grid"><div><label>Hotel Makkah</label><input class="dep-hotel-makkah" value="${hotelMakkah}"></div><div><label>Hotel Madinah</label><input class="dep-hotel-madinah" value="${hotelMadinah}"></div><div><label>Bandara Tiba</label><input class="dep-arrival-airport" value="CGK - JED"></div><div><label>Bandara Pulang</label><input class="dep-departure-airport" value="MED - CGK"></div></div>
+    </div>`;
+
+  wrap.appendChild(block);
+  block.querySelector('.dep-cur').value = def;
+  block.querySelectorAll('.tour-cur').forEach(sel => sel.value = def);
+  block.querySelectorAll('.num-format').forEach(input => { input.removeEventListener('input', handleFormat); input.addEventListener('input', handleFormat); });
+  block.querySelectorAll('input, select').forEach(i => { i.addEventListener('input', calculate); i.addEventListener('change', calculate); });
+  calculate();
+}
+
+function toggleTourInput(cb) { cb.closest('.tour-item').querySelector('.tour-price-wrap').classList.toggle('active', cb.checked); calculate(); }
+function toggleLogistik(checkbox) { checkbox.closest('.dep-block').querySelector('.logistik-fields').classList.toggle('active', checkbox.checked); }
+function searchFlight(el) { const v = el.closest('div').querySelector('.dep-flight-no').value; if (!v) return alert('Isi No Penerbangan'); window.open('https://www.google.com/search?q=penerbangan ' + encodeURIComponent(v), '_blank'); }
+function duplicateDeparture(btn) {
+  const block = btn.closest('.dep-block');
+  addDeparture(block.querySelector('.dep-date').value, block.querySelector('.dep-flight').value, block.querySelector('.dep-pax').value, block.querySelector('.dep-airline').value, block.querySelector('.dep-hotel-makkah').value, block.querySelector('.dep-hotel-madinah').value, block.querySelector('.dep-first-city').value, block.querySelector('.dep-flight-no').value);
+  const newBlock = document.querySelectorAll('.dep-block')[document.querySelectorAll('.dep-block').length - 1];
+  newBlock.querySelector('.dep-child').value = block.querySelector('.dep-child').value;
+  newBlock.querySelector('.dep-provider').value = block.querySelector('.dep-provider').value;
+  newBlock.querySelector('.dep-muasasah').value = block.querySelector('.dep-muasasah').value;
+  newBlock.querySelector('.dep-tour-leader').value = block.querySelector('.dep-tour-leader').value;
+  newBlock.querySelector('.dep-jawal').value = block.querySelector('.dep-jawal').value;
+  newBlock.querySelector('.dep-local-name').value = block.querySelector('.dep-local-name').value;
+  newBlock.querySelector('.dep-local-phone').value = block.querySelector('.dep-local-phone').value;
+  newBlock.querySelector('.dep-arrival-airport').value = block.querySelector('.dep-arrival-airport').value;
+  newBlock.querySelector('.dep-departure-airport').value = block.querySelector('.dep-departure-airport').value;
+  if (block.querySelector('.logistik-fields').classList.contains('active')) {
+    newBlock.querySelector('.logistik-toggle-area input').checked = true;
+    newBlock.querySelector('.logistik-fields').classList.add('active');
+  }
+  block.querySelectorAll('.tour-item').forEach(item => {
+    if (item.querySelector('.tour-cb').checked) {
+      const tid = item.querySelector('.tour-cb').dataset.tour;
+      const newCb = newBlock.querySelector(`.tour-cb[data-tour="${tid}"]`);
+      newCb.checked = true; toggleTourInput(newCb);
+      newBlock.querySelector(`.tour-price[data-tour="${tid}"]`).value = item.querySelector('.tour-price').value;
+      newBlock.querySelector(`.tour-cur[data-tour="${tid}"]`).value = item.querySelector('.tour-cur').value;
+    }
+  });
+  calculate();
+}
+
+function updateConversions() {
+  const rates = getRates();
+  document.querySelectorAll('input[id]').forEach(inp => {
+    const convEl = document.getElementById(inp.id + '-conv'), curSel = document.getElementById(inp.id + '-cur');
+    if (!convEl || !curSel || inp.disabled) { if(convEl) convEl.style.display = 'none'; return; }
+    const amt = val(inp.id), cur = curSel.value;
+    if (cur !== 'IDR' && amt > 0) { convEl.textContent = '≈ ' + fmt(amt * rates[cur]); convEl.style.display = 'block'; } else { convEl.style.display = 'none'; }
+  });
+  document.querySelectorAll('.dep-block').forEach(block => {
+    const flightInp = block.querySelector('.dep-flight'), curSel = block.querySelector('.dep-cur'), convEl = block.querySelector('.dep-conv');
+    if (!flightInp || !curSel || !convEl) return;
+    const amt = parseRupiah(flightInp.value), cur = curSel.value;
+    if (cur !== 'IDR' && amt > 0) { convEl.textContent = '≈ ' + fmt(amt * rates[cur]); convEl.style.display = 'block'; } else { convEl.style.display = 'none'; }
+  });
+}
+
+function calculate() {
+  updateConversions();
+  const rates = getRates(), isFullboard = getMakanMode() === 'fullboard', handlingTier = document.getElementById('handlingTier').value, viewPkg = document.getElementById('viewPkgSelect').value;
+  const fixed = { visa: toIDR('visa'), perlengkapan: toIDR('perlengkapan'), asuransi: toIDR('asuransi') };
+  const transportTotal = toIDR('transport'), muthawifRate = toIDR('muthawifPerDay'), rateMakkah = toIDR('rateMakkah'), rateMadinah = toIDR('rateMadinah');
+  const makanPerDay = isFullboard ? 0 : toIDR('makanPerDay'), overheadPct = val('overhead'), marginPct = val('margin');
+
+  latestDepartures = []; 
+  document.querySelectorAll('.dep-block').forEach((block, depIndex) => {
+    const flightInp = block.querySelector('.dep-flight'), depCur = block.querySelector('.dep-cur').value, flight = parseRupiah(flightInp.value) * (rates[depCur] || 1);
+    const pax = Math.max(1, parseFloat(block.querySelector('.dep-pax').value) || 1), dateStr = block.querySelector('.dep-date').value, firstCity = block.querySelector('.dep-first-city').value;
+    const flightNo = block.querySelector('.dep-flight-no').value || '-', airline = block.querySelector('.dep-airline').value || '-';
+    const providerName = block.querySelector('.dep-provider').value, muasasahName = block.querySelector('.dep-muasasah').value;
+    const tl = block.querySelector('.dep-tour-leader').value, jawal = block.querySelector('.dep-jawal').value, localName = block.querySelector('.dep-local-name').value, localPhone = block.querySelector('.dep-local-phone').value;
+    const hMakkah = block.querySelector('.dep-hotel-makkah').value, hMadinah = block.querySelector('.dep-hotel-madinah').value;
+    const arrAirport = block.querySelector('.dep-arrival-airport').value, depAirport = block.querySelector('.dep-departure-airport').value;
+
+    const transportPerPax = transportTotal / pax, muthawifPerPaxByDay = {};
+    for (const k in PACKAGES) muthawifPerPaxByDay[k] = (muthawifRate * PACKAGES[k].days) / pax;
+
+    let handlingUSD = 0, handlingIDR = 0;
+    if (handlingTier !== 'none') { handlingUSD = getHandlingPriceUSD(pax, handlingTier); handlingIDR = handlingUSD * rates.USD; }
+
+    const selected = [];
+    block.querySelectorAll('.tour-cb:checked').forEach(cb => {
+      const tid = cb.dataset.tour, td = TOURS.find(t => t.id === tid), priceInput = block.querySelector(`.tour-price[data-tour="${tid}"]`), curSelect = block.querySelector(`.tour-cur[data-tour="${tid}"]`);
+      if (priceInput && curSelect) {
+        const amount = parseRupiah(priceInput.value), total = amount * (rates[curSelect.value] || 1); 
+        if (total > 0) selected.push({ id: tid, name: td.name, city: td.city, total, perPax: total / pax });
+      }
+    });
+    const tourTotalGroup = selected.reduce((s, t) => s + t.total, 0), tourPerPax = selected.reduce((s, t) => s + t.perPax, 0);
+
+    const res = {};
+    for (const key in PACKAGES) {
+      const p = PACKAGES[key], hM = rateMakkah * p.makkah, hMd = rateMadinah * p.madinah, makan = makanPerDay * p.days;
+      const direct = flight + fixed.visa + hM + hMd + transportPerPax + muthawifPerPaxByDay[key] + handlingIDR + makan + fixed.perlengkapan + fixed.asuransi + tourPerPax;
+      const overhead = direct * overheadPct / 100, hpp = direct + overhead, margin = hpp * marginPct / 100;
+      res[key] = { hMakkah: hM, hMadinah: hMd, makan, overhead, hpp, margin, selling: hpp + margin };
+    }
+
+    const datesPerPkg = {};
+    for (const key in PACKAGES) datesPerPkg[key] = calculateDates(dateStr, firstCity, PACKAGES[key].makkah, PACKAGES[key].madinah);
+
+    latestDepartures.push({ name: dateStr || 'Tanpa Nama', flightNo, airline, arrivalAirport: arrAirport, departureAirport: depAirport, etd: '15:40', eta: '21:45', providerName, muasasahName, tourLeader: tl, jawal, localName, localPhone, paxChild: parseFloat(block.querySelector('.dep-child').value) || 0, hotelMakkah: hMakkah, hotelMadinah: hMadinah, firstCity, flight, pax, tours: selected, tourTotalGroup, tourPerPax, transportPerPax, muthawifPerPaxByDay, handlingUSD, handlingIDR, results: res, dates: datesPerPkg });
+  });
+
+  const exportSelect = document.getElementById('exportDepSelect');
+  exportSelect.innerHTML = '';
+  latestDepartures.forEach((dep, i) => { const opt = document.createElement('option'); opt.value = i; opt.textContent = (dep.name ? new Date(dep.name).toLocaleDateString('id-ID') : 'Tanpa Tanggal') + ' - ' + dep.flightNo + ' (' + dep.pax + ' pax)'; exportSelect.appendChild(opt); });
+
+  const out = document.getElementById('results');
+  if (!latestDepartures.length) { out.innerHTML = '<div style="padding:20px; text-align:center; color:#94a3b8;">Belum ada keberangkatan.</div>'; return; }
+
+  let html = '';
+  latestDepartures.forEach((dep, depIndex) => {
+    const tourSummary = dep.tours.length ? dep.tours.map(t => t.name).join(' + ') + ' — Total grup <b>' + fmt(dep.tourTotalGroup) + '</b> ÷ ' + dep.pax + ' pax = <b>' + fmt(dep.tourPerPax) + '/pax</b>' : 'tidak ada';
+    const dateFormatted = dep.name ? new Date(dep.name).toLocaleDateString('id-ID', {day:'2-digit', month:'long', year:'numeric'}) : '-';
+    html += `<div style="background:white; border-radius:12px; padding:15px; margin-bottom:15px; box-shadow:0 2px 8px rgba(0,0,0,.05); border:1px solid #e2e8f0;">
+      <h3 style="color:#0f766e; margin:0 0 10px 0; font-size:16px;">📅 ${dateFormatted} <span style="font-size:12px;font-weight:normal;color:#64748b">— ${dep.pax} pax</span></h3>
+      <div style="font-size:12px; color:#475569; margin-bottom:10px; line-height:1.5;">✈️ Penerbangan: <b>${dep.flightNo} (${dep.airline})</b><br>🛬 Bandara Kedatangan: <b>${dep.arrivalAirport}</b> | 🛫 Bandara Kepulangan: <b>${dep.departureAirport}</b><br>🏨 Makkah: <b>${dep.hotelMakkah}</b> | Madinah: <b>${dep.hotelMadinah}</b><br>🚩 Destinasi Pertama: <b>${dep.firstCity === 'makkah' ? 'Makkah' : 'Madinah'}</b></div>
+      <p style="font-size:12px; color:#7c3aed; margin: 4px 0;">🧭 City tour: ${tourSummary}</p>
+      
+      <div style="margin-bottom: 15px; display:flex; gap:10px;">
+        <button class="btn" style="flex:1; background:#2563eb; padding:8px;" onclick="simpanKeJadwal(${depIndex}, '${viewPkg}')">💾 Simpan ke Jadwal</button>
+        <button class="btn" style="flex:1; background:#10b981; padding:8px;" onclick="buatInvoiceDariKalkulator(${depIndex}, '${viewPkg}')">🧾 Buat Invoice</button>
+      </div>
+
+      <div class="table-responsive"><table><thead><tr><th class="left">Komponen Biaya / pax</th><th>${PACKAGES[viewPkg].label}</th></tr></thead><tbody>`;
+    const rows = [['Tiket Pesawat', () => dep.flight], ['Visa', () => fixed.visa], ['Hotel Makkah', () => dep.results[viewPkg].hMakkah], ['Hotel Madinah', () => dep.results[viewPkg].hMadinah], ['Transport Bus <span class="group-tag" style="font-size:10px;color:#4338ca;margin-left:4px;">÷ ' + dep.pax + '</span>', () => dep.transportPerPax], ['Muthawif <span class="group-tag" style="font-size:10px;color:#4338ca;margin-left:4px;">× ' + dep.pax + '</span>', () => dep.muthawifPerPaxByDay[viewPkg]], ['Handling Service', () => dep.handlingIDR], ['Makan', () => dep.results[viewPkg].makan], ['Perlengkapan', () => fixed.perlengkapan], ['Asuransi', () => fixed.asuransi]];
+    rows.forEach(([label, fn]) => { html += `<tr><td class="left">${label}</td><td>${fmt(fn())}</td></tr>`; });
+    if (dep.tours.length) { dep.tours.forEach(t => { html += `<tr class="tour-row"><td class="left">↳ ${t.name}</td><td>${fmt(t.perPax)}</td></tr>`; }); html += `<tr style="background:#f5f3ff; color:#6d28d9; font-weight:600;"><td class="left">Subtotal City Tour</td><td>${fmt(dep.tourPerPax)}</td></tr>`; }
+    html += `<tr><td class="left">Overhead</td><td>${fmt(dep.results[viewPkg].overhead)}</td></tr>`;
+    html += `<tr class="hpp-row"><td class="left">HPP / pax</td><td>${fmt(dep.results[viewPkg].hpp)}</td></tr>`;
+    html += `<tr><td class="left">Margin (${marginPct}%)</td><td>${fmt(dep.results[viewPkg].margin)}</td></tr>`;
+    html += `<tr class="price-row"><td class="left">Harga Jual / pax (QUAD)</td><td>${fmt(dep.results[viewPkg].selling)}</td></tr>`;
+    html += `<tr class="total-row"><td class="left">Total Omzet ${dep.pax} pax</td><td>${fmt(dep.results[viewPkg].selling * dep.pax)}</td></tr>`;
+    html += `<tr class="profit-row"><td class="left">Estimasi Laba Bersih</td><td>${fmt(dep.results[viewPkg].margin * dep.pax)}</td></tr></tbody></table></div></div>`;
+  });
+  out.innerHTML = html;
+}
+
+/* ===== FITUR KALKULATOR KE JADWAL / INVOICE ===== */
+function simpanKeJadwal(depIndex, pkgKey) {
+  const dep = latestDepartures[depIndex];
+  const pkg = PACKAGES[pkgKey];
+  const dateStr = dep.name || new Date().toISOString().split('T')[0];
+  
+  document.getElementById('jdwNama').value = `Paket Umrah ${pkgKey} Hari (${dep.flightNo})`;
+  document.getElementById('jdwTanggal').value = dateStr;
+  document.getElementById('jdwKuota').value = dep.pax;
+  document.getElementById('jdwQuad').value = Math.round(dep.results[pkgKey].selling).toLocaleString('id-ID');
+  
+  const qPrice = dep.results[pkgKey].selling;
+  const upgDouble = UPGRADE_PRICES.double[pkgKey] || 0;
+  const upgTriple = UPGRADE_PRICES.triple[pkgKey] || 0;
+  
+  document.getElementById('jdwTriple').value = Math.round(qPrice + upgTriple).toLocaleString('id-ID');
+  document.getElementById('jdwDouble').value = Math.round(qPrice + upgDouble).toLocaleString('id-ID');
+  
+  openTab('tab-jadwal');
+  alert('Data telah dipindahkan ke form Jadwal. Silakan klik "+ Tambah ke Jadwal".');
+}
+
+function buatInvoiceDariKalkulator(depIndex, pkgKey) {
+  const dep = latestDepartures[depIndex];
+  
+  openTab('tab-invoice');
+  
+  document.getElementById('invNomor').value = 'INV-' + Date.now().toString().slice(-6);
+  document.getElementById('invNama').value = 'Jamaah ' + dep.name;
+  document.getElementById('invDurasi').value = pkgKey;
+  document.getElementById('invTipeKamar').value = 'quad'; 
+  document.getElementById('invPax').value = dep.pax;
+  document.getElementById('invBaseHarga').value = Math.round(dep.results[pkgKey].selling).toLocaleString('id-ID');
+  
+  hitungTotalInvoice();
+}
+
+/* ===== FITUR TAB 2: JADWAL PAKET ===== */
+let dbJadwal = JSON.parse(localStorage.getItem('umrah_jadwal')) || [];
+
+function addJadwal() {
+  const nama = document.getElementById('jdwNama').value;
+  const tgl = document.getElementById('jdwTanggal').value;
+  const kuota = document.getElementById('jdwKuota').value;
+  const quad = parseRupiah(document.getElementById('jdwQuad').value);
+  const triple = parseRupiah(document.getElementById('jdwTriple').value);
+  const double = parseRupiah(document.getElementById('jdwDouble').value);
+
+  if(!nama || !tgl || !quad) return alert('Nama Paket, Tanggal, dan Harga Quad wajib diisi!');
+
+  dbJadwal.push({ id: Date.now(), nama, tgl, kuota, quad, triple, double });
+  localStorage.setItem('umrah_jadwal', JSON.stringify(dbJadwal));
+  
+  document.getElementById('jdwNama').value = '';
+  document.getElementById('jdwTanggal').value = '';
+  document.getElementById('jdwKuota').value = '';
+  document.getElementById('jdwQuad').value = '';
+  document.getElementById('jdwTriple').value = '';
+  document.getElementById('jdwDouble').value = '';
+
+  renderJadwal();
+}
+
+function renderJadwal() {
+  const tbody = document.getElementById('tbodyJadwal');
+  tbody.innerHTML = '';
+  if(dbJadwal.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:15px; color:#94a3b8;">Belum ada data jadwal.</td></tr>';
+    return;
+  }
+  dbJadwal.forEach((j, index) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="left"><b>${j.nama}</b></td>
+      <td>${new Date(j.tgl).toLocaleDateString('id-ID')}</td>
+      <td>${j.quad ? fmt(j.quad) : '-'}</td>
+      <td>${j.triple ? fmt(j.triple) : '-'}</td>
+      <td>${j.double ? fmt(j.double) : '-'}</td>
+      <td>${j.kuota || '-'}</td>
+      <td><button class="btn btn-danger" style="padding:5px 10px; font-size:12px;" onclick="hapusJadwal(${j.id})">Hapus</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function hapusJadwal(id) {
+  if(!confirm('Hapus jadwal ini?')) return;
+  dbJadwal = dbJadwal.filter(j => j.id !== id);
+  localStorage.setItem('umrah_jadwal', JSON.stringify(dbJadwal));
+  renderJadwal();
+}
+
+/* ===== FITUR TAB 3: INVOICE & PEMBAYARAN ===== */
+let dbInvoices = JSON.parse(localStorage.getItem('umrah_invoices')) || {};
+let currentInvoiceId = null;
+
+const UPGRADE_PRICES = {
+  double: { '9': 2750000, '12': 4500000, '16': 6500000 },
+  triple: { '9': 1500000, '12': 2500000, '16': 4000000 }
+};
+
+function renderPilihanPaketInvoice() {
+  const sel = document.getElementById('invPaketSelect');
+  const currentVal = sel.value;
+  sel.innerHTML = '<option value="">-- Pilih Paket --</option>';
+  dbJadwal.forEach(j => {
+    sel.innerHTML += `<option value="${j.id}">${j.nama} (${new Date(j.tgl).toLocaleDateString('id-ID')})</option>`;
+  });
+  sel.value = currentVal;
+}
+
+function pilihPaketInvoice() {
+  const id = document.getElementById('invPaketSelect').value;
+  if(!id) {
+    document.getElementById('invBaseHarga').value = '';
+    return;
+  }
+  const paket = dbJadwal.find(j => j.id == id);
+  if(paket) {
+    document.getElementById('invBaseHarga').value = parseInt(paket.quad).toLocaleString('id-ID');
+    if(paket.nama.includes('9') || paket.nama.includes('09')) document.getElementById('invDurasi').value = '9';
+    if(paket.nama.includes('12')) document.getElementById('invDurasi').value = '12';
+    if(paket.nama.includes('16')) document.getElementById('invDurasi').value = '16';
+    hitungTotalInvoice();
+  }
+}
+
+function hitungTotalInvoice() {
+  const durasi = document.getElementById('invDurasi').value;
+  const tipe = document.getElementById('invTipeKamar').value;
+  const pax = parseFloat(document.getElementById('invPax').value) || 1;
+  const basePrice = parseRupiah(document.getElementById('invBaseHarga').value);
+  
+  let upgradeCost = 0;
+  if (tipe !== 'quad' && durasi && UPGRADE_PRICES[tipe] && UPGRADE_PRICES[tipe][durasi]) {
+    upgradeCost = UPGRADE_PRICES[tipe][durasi];
+  }
+  
+  document.getElementById('invUpgradeCost').value = upgradeCost.toLocaleString('id-ID');
+
+  const total = (basePrice + upgradeCost) * pax;
+  document.getElementById('invTotalHarga').value = total.toLocaleString('id-ID');
+}
+
+function simpanInvoice() {
+  const recipientType = document.getElementById('invRecipientType').value;
+  const nomor = document.getElementById('invNomor').value;
+  const nama = document.getElementById('invNama').value;
+  const paketId = document.getElementById('invPaketSelect').value;
+  const tipeKamar = document.getElementById('invTipeKamar').value;
+  const pax = parseFloat(document.getElementById('invPax').value) || 1;
+  const basePrice = parseRupiah(document.getElementById('invBaseHarga').value);
+  const upgradeCost = parseRupiah(document.getElementById('invUpgradeCost').value);
+  const total = parseRupiah(document.getElementById('invTotalHarga').value);
+  const hp = document.getElementById('invHP').value;
+
+  if(!nomor || !nama || !total) return alert('Nomor Invoice, Nama, dan Total Harga wajib diisi!');
+
+  const paketObj = dbJadwal.find(j => j.id == paketId);
+
+  dbInvoices[nomor] = {
+    recipientType, nomor, nama, hp, tipeKamar, pax, basePrice, upgradeCost, total,
+    namaPaket: paketObj ? paketObj.nama : 'Custom/Manual',
+    tanggalBuat: new Date().toISOString(),
+    pembayaran: dbInvoices[nomor] ? dbInvoices[nomor].pembayaran : [] 
+  };
+
+  localStorage.setItem('umrah_invoices', JSON.stringify(dbInvoices));
+  alert('Invoice berhasil disimpan!');
+  cariDataInvoice(nomor);
+}
+
+function cariDataInvoice(nomorDirect = null) {
+  const nomor = nomorDirect || document.getElementById('cariInvoice').value;
+  if(!nomor) return alert('Masukkan Nomor Invoice');
+  
+  const inv = dbInvoices[nomor];
+  if(!inv) {
+    document.getElementById('hasilInvoiceContainer').style.display = 'none';
+    return alert('Invoice tidak ditemukan!');
+  }
+
+  currentInvoiceId = nomor;
+  document.getElementById('cariInvoice').value = nomor;
+  document.getElementById('hasilInvoiceContainer').style.display = 'block';
+
+  const isOwner = inv.recipientType === 'owner';
+
+  // Header Penerima & Judul
+  if (isOwner) {
+    document.getElementById('viewInvTitle').textContent = 'INVOICE TAGIHAN AGEN/OWNER';
+    document.getElementById('viewInvLabelPenerima').textContent = 'Kepada Yth, Owner/Pimpinan:';
+  } else {
+    document.getElementById('viewInvTitle').textContent = 'INVOICE JAMAAH';
+    document.getElementById('viewInvLabelPenerima').textContent = 'Kepada Yth, Calon Jamaah:';
+  }
+
+  document.getElementById('viewInvNomor').textContent = inv.nomor;
+  document.getElementById('viewInvTanggal').textContent = new Date(inv.tanggalBuat).toLocaleDateString('id-ID');
+  document.getElementById('viewInvNama').textContent = inv.nama;
+  document.getElementById('viewInvHP').textContent = inv.hp || '-';
+  document.getElementById('viewInvPaket').textContent = inv.namaPaket;
+  document.getElementById('viewInvKamar').textContent = inv.tipeKamar;
+  document.getElementById('viewInvPax').textContent = inv.pax + ' Orang';
+
+  const perPax = inv.basePrice + inv.upgradeCost;
+
+  // ===== TOGGLE TAMPILAN: OWNER vs JAMAAH =====
+  if (isOwner) {
+    // OWNER: tampilkan rincian base + upgrade
+    document.getElementById('rowInvBase').style.display = '';
+    document.getElementById('rowInvUpgrade').style.display = '';
+    document.getElementById('rowInvPerPax').style.display = 'none';
+    document.getElementById('viewInvBase').textContent = fmt(inv.basePrice) + ' / pax';
+    document.getElementById('viewInvUpgrade').textContent = fmt(inv.upgradeCost) + ' / pax';
+  } else {
+    // JAMAAH: sembunyikan rincian, hanya tampilkan harga per pax & jumlah jamaah
+    document.getElementById('rowInvBase').style.display = 'none';
+    document.getElementById('rowInvUpgrade').style.display = 'none';
+    document.getElementById('rowInvPerPax').style.display = '';
+    document.getElementById('viewInvPerPax').textContent = fmt(perPax) + ' / pax';
+  }
+
+  document.getElementById('viewInvTotal').textContent = fmt(inv.total);
+
+  renderTabelPembayaran(inv);
+}
+
+function renderTabelPembayaran(inv) {
+  const tbody = document.getElementById('tbodyPembayaran');
+  tbody.innerHTML = '';
+  let totalBayar = 0;
+
+  if(inv.pembayaran.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#94a3b8;">Belum ada pembayaran.</td></tr>';
+  } else {
+    inv.pembayaran.forEach((p, idx) => {
+      totalBayar += p.jumlah;
+      tbody.innerHTML += `
+        <tr>
+          <td>${new Date(p.tgl).toLocaleDateString('id-ID')}</td>
+          <td class="left">${p.ket}</td>
+          <td>${p.metode || 'Cash'}</td>
+          <td>${fmt(p.jumlah)}</td>
+          <td style="display:flex; gap:4px; justify-content:flex-end;">
+            <button class="btn btn-print" style="padding:4px 8px; font-size:11px;" onclick="cetakKwitansi('${inv.nomor}', ${idx})">🖨️</button>
+            <button class="btn btn-danger" style="padding:4px 8px; font-size:11px;" onclick="hapusPembayaran('${inv.nomor}', ${idx})">X</button>
+          </td>
+        </tr>`;
+    });
+  }
+
+  const sisa = inv.total - totalBayar;
+  document.getElementById('viewTotalBayar').textContent = fmt(totalBayar);
+  document.getElementById('viewSisaTagihan').textContent = fmt(sisa);
+  document.getElementById('viewSisaTagihan').style.color = sisa <= 0 ? '#047857' : '#dc2626';
+  
+  document.getElementById('viewTerbilang').innerHTML = `<b>Terbilang:</b> ${terbilang(sisa)} Rupiah`;
+}
+
+function tambahPembayaran() {
+  if(!currentInvoiceId) return;
+  const tgl = document.getElementById('payTanggal').value;
+  const ket = document.getElementById('payKet').value;
+  const metode = document.getElementById('payMetode').value;
+  const jumlah = parseRupiah(document.getElementById('payJumlah').value);
+
+  if(!tgl || !jumlah) return alert('Tanggal dan Jumlah wajib diisi!');
+
+  dbInvoices[currentInvoiceId].pembayaran.push({ tgl, ket, metode, jumlah });
+  localStorage.setItem('umrah_invoices', JSON.stringify(dbInvoices));
+
+  document.getElementById('payTanggal').value = '';
+  document.getElementById('payKet').value = '';
+  document.getElementById('payJumlah').value = '';
+
+  cariDataInvoice(currentInvoiceId);
+}
+
+function hapusPembayaran(nomorInv, index) {
+  if(!confirm('Hapus data pembayaran ini?')) return;
+  dbInvoices[nomorInv].pembayaran.splice(index, 1);
+  localStorage.setItem('umrah_invoices', JSON.stringify(dbInvoices));
+  cariDataInvoice(nomorInv);
+}
+
+/* ===== CETAK INVOICE & KWITANSI ===== */
+function cetakInvoice() {
+  if(!currentInvoiceId) return;
+  const inv = dbInvoices[currentInvoiceId];
+  const win = window.open('', '_blank');
+  
+  let totalBayar = 0;
+  inv.pembayaran.forEach(p => totalBayar += p.jumlah);
+  const sisa = inv.total - totalBayar;
+  const perPax = inv.basePrice + inv.upgradeCost;
+
+  let rowsPembayaran = '';
+  inv.pembayaran.forEach(p => {
+    rowsPembayaran += `<tr><td>${new Date(p.tgl).toLocaleDateString('id-ID')}</td><td>${p.ket}</td><td>${p.metode}</td><td style="text-align:right;">${fmt(p.jumlah)}</td></tr>`;
+  });
+  if(!rowsPembayaran) rowsPembayaran = '<tr><td colspan="4" style="text-align:center;">Belum ada pembayaran</td></tr>';
+
+  const isOwner = inv.recipientType === 'owner';
+  const titleText = isOwner ? 'INVOICE TAGIHAN AGEN/OWNER' : 'INVOICE JAMAAH';
+  const recipientText = isOwner ? `<b>Kepada Yth, Owner/Pimpinan</b>` : `<b>Kepada Yth, Calon Jamaah</b>`;
+
+  // ===== BANGUN TABEL RINCIAN BIAYA SESUAI TIPE PENERIMA =====
+  let detailRows = '';
+  if (isOwner) {
+    // OWNER: rincian lengkap (base + upgrade + total)
+    detailRows = `
+      <tr><th>Deskripsi</th><th>Harga / Pax</th><th>Total</th></tr>
+      <tr>
+        <td>Harga Dasar Paket (Quad)</td>
+        <td style="text-align:right;">${fmt(inv.basePrice)}</td>
+        <td style="text-align:right;">${fmt(inv.basePrice * inv.pax)}</td>
+      </tr>
+      <tr>
+        <td>Upgrade Kamar (${inv.tipeKamar.toUpperCase()})</td>
+        <td style="text-align:right;">${fmt(inv.upgradeCost)}</td>
+        <td style="text-align:right;">${fmt(inv.upgradeCost * inv.pax)}</td>
+      </tr>
+    `;
+  } else {
+    // JAMAAH: hanya harga per pax & jumlah jamaah
+    detailRows = `
+      <tr><th>Deskripsi</th><th>Harga / Pax</th><th>Jumlah Jamaah</th><th>Total</th></tr>
+      <tr>
+        <td>Paket Umrah (${inv.tipeKamar.toUpperCase()})</td>
+        <td style="text-align:right;">${fmt(perPax)}</td>
+        <td style="text-align:right;">${inv.pax} Orang</td>
+        <td style="text-align:right;">${fmt(inv.total)}</td>
+      </tr>
+    `;
+  }
+
+  win.document.write(`
+    <html><head><title>Invoice ${inv.nomor}</title>
+    <style>
+      body { font-family: Arial, sans-serif; padding: 30px; color: #000; }
+      .header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 15px; margin-bottom: 20px; }
+      .header h1 { margin: 0; font-size: 24px; }
+      .info { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 14px; }
+      .table-data { width: 100%; border-collapse: collapse; font-size: 14px; margin-bottom: 20px; }
+      .table-data th, .table-data td { border: 1px solid #000; padding: 8px; }
+      .table-data th { background: #f0f0f0; text-align: left; }
+      .total-box { background: #f0fdfa; padding: 15px; border: 1px solid #0f766e; font-size: 16px; font-weight: bold; text-align: right; margin-bottom: 20px; }
+      .footer { text-align: right; margin-top: 50px; font-size: 14px; }
+      @media print { body { padding: 0; } }
+    </style>
+    </head><body>
+      <div class="header">
+        <h1>${document.getElementById('travelName').value}</h1>
+        <p>${document.getElementById('travelContact').value}</p>
+      </div>
+      <h2 style="text-align:center;">${titleText}</h2>
+      
+      <div class="info">
+        <div>
+          <b>No Invoice:</b> ${inv.nomor}<br>
+          <b>Tanggal:</b> ${new Date(inv.tanggalBuat).toLocaleDateString('id-ID')}<br>
+          ${recipientText}
+        </div>
+        <div>
+          <b>Paket:</b> ${inv.namaPaket}<br>
+          <b>Tipe Kamar:</b> ${inv.tipeKamar.toUpperCase()}<br>
+          <b>Jumlah Jamaah:</b> ${inv.pax} Orang
+        </div>
+      </div>
+
+      <table class="table-data">
+        ${detailRows}
+      </table>
+
+      <div class="total-box">
+        TOTAL TAGIHAN: ${fmt(inv.total)}
+      </div>
+
+      <h3>Riwayat Pembayaran</h3>
+      <table class="table-data">
+        <tr><th>Tanggal</th><th>Keterangan</th><th>Metode</th><th>Jumlah</th></tr>
+        ${rowsPembayaran}
+      </table>
+
+      <div class="total-box" style="background:#fee2e2; border-color:#dc2626; color:#dc2626;">
+        SISA TAGIHAN: ${fmt(sisa)}
+      </div>
+      <p><b>Terbilang:</b> ${terbilang(sisa)} Rupiah</p>
+
+      <div class="footer">
+        <p>Hormat Kami,</p><br><br><br>
+        <p><b>${document.getElementById('travelName').value}</b></p>
+      </div>
+    </body></html>
+  `);
+  win.document.close();
+  setTimeout(() => { win.print(); }, 500);
+}
+
+function cetakKwitansi(nomorInv, indexPembayaran) {
+  const inv = dbInvoices[nomorInv];
+  const p = inv.pembayaran[indexPembayaran];
+  
+  const win = window.open('', '_blank');
+  win.document.write(`
+    <html><head><title>Kwitansi ${inv.nomor}</title>
+    <style>
+      body { font-family: 'Times New Roman', Times, serif; padding: 40px; color: #000; }
+      .kwitansi-box { border: 2px solid #000; padding: 30px; max-width: 600px; margin: 0 auto; border-radius: 8px; }
+      .header { text-align: center; border-bottom: 2px dashed #000; padding-bottom: 15px; margin-bottom: 20px; }
+      .header h1 { margin: 0; font-size: 28px; text-transform: uppercase; }
+      .row { margin-bottom: 15px; font-size: 18px; }
+      .row label { display: inline-block; width: 150px; font-weight: bold; }
+      .nominal { font-size: 24px; font-weight: bold; background: #eee; padding: 15px; text-align: center; border: 1px solid #000; margin: 20px 0; }
+      .footer { display: flex; justify-content: space-between; margin-top: 50px; font-size: 16px; }
+      @media print { body { padding: 0; } .kwitansi-box { border: none; } }
+    </style>
+    </head><body>
+      <div class="kwitansi-box">
+        <div class="header">
+          <h1>KWITANSI PEMBAYARAN</h1>
+          <p>${document.getElementById('travelName').value}</p>
+        </div>
+        <div class="row"><label>No. Kwitansi</label> : KW-${Date.now().toString().slice(-6)}</div>
+        <div class="row"><label>Telah Diterima Dari</label> : ${inv.nama}</div>
+        <div class="row"><label>Untuk Pembayaran</label> : ${p.ket} (${inv.namaPaket})</div>
+        <div class="row"><label>Metode Pembayaran</label> : ${p.metode}</div>
+        
+        <div class="nominal">${fmt(p.jumlah)}</div>
+        <p style="text-align:center; font-style:italic;">Terbilang: ${terbilang(p.jumlah)} Rupiah</p>
+
+        <div class="footer">
+          <div>
+            <p>Tanggal: ${new Date(p.tgl).toLocaleDateString('id-ID')}</p>
+          </div>
+          <div style="text-align:center;">
+            <p>Penerima,</p><br><br><br>
+            <p>( ................................... )</p>
+          </div>
+        </div>
+      </div>
+    </body></html>
+  `);
+  win.document.close();
+  setTimeout(() => { win.print(); }, 500);
+}
+
+/* ===== FUNGSI TERBILANG ===== */
+function terbilang(angka) {
+  const bilangan = ["", "Satu", "Dua", "Tiga", "Empat", "Lima", "Enam", "Tujuh", "Delapan", "Sembilan", "Sepuluh", "Sebelas"];
+  angka = Math.abs(angka);
+  if (angka < 12) return bilangan[angka];
+  else if (angka < 20) return terbilang(angka - 10) + " Belas";
+  else if (angka < 100) return terbilang(Math.floor(angka / 10)) + " Puluh " + terbilang(angka % 10);
+  else if (angka < 200) return "Seratus " + terbilang(angka - 100);
+  else if (angka < 1000) return terbilang(Math.floor(angka / 100)) + " Ratus " + terbilang(angka % 100);
+  else if (angka < 2000) return "Seribu " + terbilang(angka - 1000);
+  else if (angka < 1000000) return terbilang(Math.floor(angka / 1000)) + " Ribu " + terbilang(angka % 1000);
+  else if (angka < 1000000000) return terbilang(Math.floor(angka / 1000000)) + " Juta " + terbilang(angka % 1000000);
+  else if (angka < 1000000000000) return terbilang(Math.floor(angka / 1000000000)) + " Miliar " + terbilang(angka % 1000000000);
+  else return "Angka terlalu besar";
+}
+
+/* ===== EXPORT SURAT PENAWARAN ===== */
+function exportSurat() {
+  const depIndex = document.getElementById('exportDepSelect').value;
+  const pkgKey = document.getElementById('exportPkgSelect').value;
+  const recipientType = document.getElementById('exportTargetType').value;
+  
+  if (depIndex === '' || !latestDepartures[depIndex]) { alert('Pilih keberangkatan yang valid.'); return; }
+  const dep = latestDepartures[depIndex];
+  const pkg = PACKAGES[pkgKey];
+  const res = dep.results[pkgKey];
+  const dates = dep.dates[pkgKey];
+  
+  const tier = document.getElementById('handlingTier').value;
+  const handling = tier !== 'none' ? HANDLING_DATA[tier] : { name: 'TANPA HANDLING', features: [] };
+  
+  const travelName = document.getElementById('travelName').value || 'TRAVEL UMRAH';
+  const travelContact = document.getElementById('travelContact').value || '';
+  const toursStr = dep.tours.length ? dep.tours.map(t => t.name).join(', ') : 'Tidak ada';
+  const makanStr = getMakanMode() === 'fullboard' ? 'Fullboard (Termasuk)' : 'Include';
+  
+  const dateFormatted = dep.name ? new Date(dep.name).toLocaleDateString('id-ID', {day:'2-digit', month:'long', year:'numeric'}) : '-';
+
+  let recipientText = recipientType === 'owner' ? 'Owner / Pimpinan Travel' : 'Calon Jamaah Umrah';
+  let closingText = recipientType === 'owner' ? 'Demikian penawaran ini kami sampaikan. Kami siap bekerja sama dengan sebaik-baiknya.' : 'Demikian penawaran ini kami sampaikan. Kami berharap dapat melayani perjalanan ibadah Bapak/Ibu.';
+
+  const win = window.open('', '_blank');
+  win.document.open();
+  win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Surat Penawaran</title></head><body></body></html>');
+  win.document.close();
+
+  const template = document.getElementById('suratPenawaranTemplate');
+  const clone = template.content.cloneNode(true);
+  win.document.body.appendChild(clone);
+
+  const doc = win.document;
+  doc.getElementById('t-travelName').textContent = travelName.toUpperCase();
+  doc.getElementById('t-travelNameFooter').textContent = travelName;
+  doc.getElementById('t-travelContact').textContent = travelContact;
+  doc.getElementById('t-date').textContent = ': ' + dateFormatted;
+  doc.getElementById('t-flight-no').textContent = ': ' + dep.flightNo;
+  doc.getElementById('t-airline').textContent = ': ' + dep.airline;
+  doc.getElementById('t-arrival-airport').textContent = ': ' + dep.arrivalAirport;
+  doc.getElementById('t-departure-airport').textContent = ': ' + dep.departureAirport;
+  doc.getElementById('t-duration').textContent = ': ' + pkg.label + ' (Makkah ' + pkg.makkah + ' malam, Madinah ' + pkg.madinah + ' malam)';
+  doc.getElementById('t-pax').textContent = ': ' + dep.pax + ' Orang';
+  
+  doc.getElementById('t-hotelMakkah').innerHTML = dep.hotelMakkah + '<br><small>Check-in: ' + dates.mIn + ' | Check-out: ' + dates.mOut + '</small>';
+  doc.getElementById('t-hotelMadinah').innerHTML = dep.hotelMadinah + '<br><small>Check-in: ' + dates.dIn + ' | Check-out: ' + dates.dOut + '</small>';
+  
+  doc.getElementById('t-handling').innerHTML = '<b>' + handling.name + '</b>';
+  doc.getElementById('t-tours').textContent = toursStr;
+  doc.getElementById('t-makan').textContent = makanStr;
+  
+  const ul = doc.getElementById('t-featuresList');
+  if (tier !== 'none') {
+    doc.getElementById('t-handlingTitle').textContent = 'Fasilitas Handling ' + handling.name + ' Meliputi:';
+    handling.features.forEach(f => {
+      const li = doc.createElement('li');
+      li.textContent = f;
+      ul.appendChild(li);
+    });
+  } else {
+    doc.getElementById('div-features').style.display = 'none';
+  }
+  
+  doc.getElementById('t-pricePax').textContent = fmt(res.selling);
+  
+  // Tampilkan Total Pax HANYA untuk Owner
+  if (recipientType === 'owner') {
+    doc.getElementById('t-totalLabel').textContent = 'Total Harga (' + dep.pax + ' Pax)';
+    doc.getElementById('t-priceTotal').textContent = fmt(res.selling * dep.pax);
+    doc.getElementById('t-priceTotal').parentElement.style.display = 'table-row';
+  } else {
+    doc.getElementById('t-priceTotal').parentElement.style.display = 'none';
+  }
+
+  // Modifikasi Teks Penerima
+  if (doc.getElementById('t-recipient-type')) {
+    doc.getElementById('t-recipient-type').innerHTML = 'Kepada Yth. <b>' + recipientText + '</b>,';
+  }
+  if (doc.getElementById('t-closing-text')) {
+    doc.getElementById('t-closing-text').textContent = closingText;
+  }
+}
+
+/* ===== EXPORT ITINERARY & LOGISTIK ===== */
+function exportItinerary() {
+  const depIndex = document.getElementById('exportDepSelect').value;
+  const pkgKey = document.getElementById('exportPkgSelect').value;
+  if (depIndex === '' || !latestDepartures[depIndex]) { alert('Pilih keberangkatan yang valid.'); return; }
+  const dep = latestDepartures[depIndex];
+  const pkg = PACKAGES[pkgKey];
+  const schedule = buildUnifiedSchedule(dep, pkgKey);
+  const travelName = document.getElementById('travelName').value || 'TRAVEL UMRAH';
+  const travelContact = document.getElementById('travelContact').value || '';
+  const dateFormatted = dep.name ? new Date(dep.name).toLocaleDateString('id-ID', {day:'2-digit', month:'long', year:'numeric'}) : '-';
+  const win = window.open('', '_blank');
+  win.document.open();
+  win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Itinerary</title></head><body></body></html>');
+  win.document.close();
+  const template = document.getElementById('itineraryTemplate');
+  const clone = template.content.cloneNode(true);
+  win.document.body.appendChild(clone);
+  const doc = win.document;
+  doc.getElementById('t-travelName').textContent = travelName.toUpperCase();
+  doc.getElementById('t-travelNameFooter').textContent = travelName;
+  doc.getElementById('t-travelContact').textContent = travelContact;
+  doc.getElementById('t-date').textContent = dateFormatted;
+  doc.getElementById('t-flight-no').textContent = dep.flightNo;
+  doc.getElementById('t-airline').textContent = dep.airline;
+  doc.getElementById('t-arrival-airport').textContent = dep.arrivalAirport;
+  doc.getElementById('t-departure-airport').textContent = dep.departureAirport;
+  doc.getElementById('t-duration').textContent = pkg.label + ' (' + pkg.days + ' Hari)';
+  doc.getElementById('t-firstCity').textContent = dep.firstCity === 'makkah' ? 'Makkah' : 'Madinah';
+  doc.getElementById('t-hotelMakkah').textContent = dep.hotelMakkah;
+  doc.getElementById('t-hotelMadinah').textContent = dep.hotelMadinah;
+  const tbody = doc.getElementById('t-itineraryBody');
+  schedule.itinerary.forEach(item => {
+    const tr = doc.createElement('tr');
+    tr.innerHTML = '<td class="hari">' + item.day + '</td><td class="tanggal">' + item.date + '</td><td class="kegiatan">' + item.title + '</td><td>' + item.desc + '</td>';
+    tbody.appendChild(tr);
+  });
+}
+
+function exportPaketInfo() {
+  const depIndex = document.getElementById('exportDepSelect').value;
+  const pkgKey = document.getElementById('exportPkgSelect').value;
+  if (depIndex === '' || !latestDepartures[depIndex]) { alert('Pilih keberangkatan yang valid.'); return; }
+  const dep = latestDepartures[depIndex];
+  const pkg = PACKAGES[pkgKey];
+  const dates = dep.dates[pkgKey];
+  const schedule = buildUnifiedSchedule(dep, pkgKey);
+  const travelName = document.getElementById('travelName').value;
+  const win = window.open('', '_blank');
+  win.document.open();
+  win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Info Paket Logistik</title></head><body></body></html>');
+  win.document.close();
+  const template = document.getElementById('logistikTemplate');
+  const clone = template.content.cloneNode(true);
+  win.document.body.appendChild(clone);
+  const doc = win.document;
+  doc.getElementById('l-provider').textContent = dep.providerName;
+  doc.getElementById('l-muasasah').textContent = dep.muasasahName;
+  doc.getElementById('l-groupNo').textContent = "-";
+  doc.getElementById('l-subAgent').textContent = travelName;
+  doc.getElementById('l-pax').textContent = `Adult: ${dep.pax} | Child: ${dep.paxChild}`;
+  doc.getElementById('l-tourLeader').textContent = dep.tourLeader;
+  doc.getElementById('l-jawal').textContent = dep.jawal;
+  const flightBody = doc.getElementById('l-flightBody');
+  const arrCode = dep.arrivalAirport.split('-')[0].trim() || 'CGK';
+  const arrDest = dep.arrivalAirport.split('-')[1] ? dep.arrivalAirport.split('-')[1].trim() : 'JED';
+  const depCode = dep.departureAirport.split('-')[0].trim() || 'MED';
+  const depDest = dep.departureAirport.split('-')[1] ? dep.departureAirport.split('-')[1].trim() : 'CGK';
+  flightBody.innerHTML = `
+    <tr><td>${arrCode}</td><td>${arrDest}</td><td>${dates.mIn}</td><td>${dep.etd}</td><td>${dep.eta}</td><td>${dep.airline}</td><td>${dep.flightNo.split('/')[0] || dep.flightNo}</td><td></td></tr>
+    <tr><td>${depCode}</td><td>${depDest}</td><td>${dates.dOut}</td><td>19:40</td><td>09:25</td><td>${dep.airline}</td><td>${dep.flightNo.split('/')[1] || dep.flightNo}</td><td>+1</td></tr>`;
+  const hotelBody = doc.getElementById('l-hotelBody');
+  const totalPax = dep.pax + dep.paxChild;
+  const quadRooms = Math.ceil(totalPax / 4);
+  hotelBody.innerHTML += `
+    <tr><td>MAKKAH</td><td class="text-left">${dep.hotelMakkah}</td><td>${dates.mIn}</td><td>${dates.mOut}</td><td></td><td></td><td class="bold">${quadRooms}</td><td></td><td></td></tr>
+    <tr><td>MADINAH</td><td class="text-left">${dep.hotelMadinah}</td><td>${dates.dIn}</td><td>${dates.dOut}</td><td></td><td></td><td class="bold">${quadRooms}</td><td></td><td></td></tr>`;
+  const transBody = doc.getElementById('l-transBody');
+  schedule.transport.forEach(t => {
+    transBody.innerHTML += `<tr><td>${t.date}</td><td>${t.from}</td><td>${t.to}</td><td>${t.time}</td><td>${t.bus}</td><td></td></tr>`;
+  });
+  doc.getElementById('l-localName').textContent = dep.localName;
+  doc.getElementById('l-localPhone').textContent = dep.localPhone;
+}
+
+function buildUnifiedSchedule(dep, pkgKey) {
+  const pkg = PACKAGES[pkgKey];
+  const isMakkahFirst = dep.firstCity === 'makkah';
+  const city1 = isMakkahFirst ? 'Makkah' : 'Madinah';
+  const city2 = isMakkahFirst ? 'Madinah' : 'Makkah';
+  const hotel1 = isMakkahFirst ? dep.hotelMakkah : dep.hotelMadinah;
+  const hotel2 = isMakkahFirst ? dep.hotelMadinah : dep.hotelMakkah;
+  let itinerary = [], transport = [];
+  let currentDate = new Date(dep.name || new Date());
+  const formatDate = (d) => d.toLocaleDateString('id-ID', {day:'2-digit', month:'short', year:'numeric'}).replace(/\./g, '-');
+  const formatDateLong = (d) => d.toLocaleDateString('id-ID', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+  const addDay = (title, desc) => { itinerary.push({ day: itinerary.length + 1, date: formatDateLong(currentDate), title, desc }); currentDate.setDate(currentDate.getDate() + 1); };
+
+  let ziarahMadinah = ["Masjid Quba", "Jabal Uhud", "Masjid Qiblatain"];
+  if (pkgKey === '12' || pkgKey === '16') ziarahMadinah.push("Masjid Khandaq");
+  ziarahMadinah.push(pkgKey === '16' ? "Kebun/Pasar Kurma Grosir" : "Kebun Kurma");
+  const extraMadinah = dep.tours.filter(t => t.city === 'Madinah').map(t => t.name);
+  const fullZiarahMadinah = [...ziarahMadinah, ...extraMadinah].join(', ');
+
+  const ziarahMakkah = ["Jabal Nur", "Jabal Tsur", "Padang Arafah", "Jabal Rahmah", "Mina", "Masjid Ji'ronah"];
+  const extraMakkah = dep.tours.filter(t => t.city === 'Makkah').map(t => t.name);
+  const fullZiarahMakkah = [...ziarahMakkah, ...extraMakkah].join(', ');
+
+  if (isMakkahFirst) {
+      addDay(`Keberangkatan & Tiba`, `Tiba di Bandara, menuju Hotel ${hotel1} di Makkah.`);
+      transport.push({ date: formatDate(currentDate), from: `AIRPORT`, to: `HOTEL MAKKAH`, time: '21:45', bus: Math.ceil(dep.pax / 45) });
+      currentDate.setDate(currentDate.getDate() + 1);
+      addDay(`Umrah Wajib`, `Melaksanakan Umrah Wajib.`);
+      addDay(`Ziarah Makkah`, `Mengunjungi ${fullZiarahMakkah}.`);
+      transport.push({ date: formatDate(currentDate), from: `HOTEL MAKKAH`, to: `CITY TOUR`, time: '07:30', bus: 1 });
+      currentDate.setDate(currentDate.getDate() + 1);
+      for (let i = 4; i <= pkg.makkah; i++) { addDay(`Ibadah Makkah`, `Shalat dan Thawaf Sunnah.`); currentDate.setDate(currentDate.getDate() + 1); }
+      addDay(`Pindah ke Madinah`, `Menuju Madinah, Check-in ${hotel2}.`);
+      transport.push({ date: formatDate(currentDate), from: `HOTEL MAKKAH`, to: `HOTEL MADINAH`, time: '09:00', bus: Math.ceil(dep.pax / 45) });
+      currentDate.setDate(currentDate.getDate() + 1);
+      addDay(`Ibadah Madinah`, `Shalat di Masjid Nabawi.`);
+      currentDate.setDate(currentDate.getDate() + 1);
+      addDay(`Ziarah Madinah`, `Mengunjungi ${fullZiarahMadinah}.`);
+      transport.push({ date: formatDate(currentDate), from: `HOTEL MADINAH`, to: `CITY TOUR`, time: '07:30', bus: 1 });
+      currentDate.setDate(currentDate.getDate() + 1);
+      for (let i = 4; i <= pkg.madinah; i++) {
+          if (pkgKey === '16' && i === 4) addDay(`Arbain`, `Mengejar 40 waktu shalat.`);
+          else addDay(`Ibadah Madinah`, `Shalat dan Ibadah.`);
+          currentDate.setDate(currentDate.getDate() + 1);
+      }
+      addDay("Kepulangan", `Menuju Bandara.`);
+      transport.push({ date: formatDate(currentDate), from: `HOTEL MADINAH`, to: `AIRPORT`, time: '15:30', bus: Math.ceil(dep.pax / 45) });
+  } else {
+      addDay(`Keberangkatan & Tiba`, `Tiba di Bandara, menuju Hotel ${hotel1} di Madinah.`);
+      transport.push({ date: formatDate(currentDate), from: `AIRPORT`, to: `HOTEL MADINAH`, time: '21:45', bus: Math.ceil(dep.pax / 45) });
+      currentDate.setDate(currentDate.getDate() + 1);
+      addDay(`Ibadah Madinah`, `Shalat di Masjid Nabawi.`);
+      currentDate.setDate(currentDate.getDate() + 1);
+      addDay(`Ziarah Madinah`, `Mengunjungi ${fullZiarahMadinah}.`);
+      transport.push({ date: formatDate(currentDate), from: `HOTEL MADINAH`, to: `CITY TOUR`, time: '07:30', bus: 1 });
+      currentDate.setDate(currentDate.getDate() + 1);
+      for (let i = 4; i <= pkg.madinah; i++) {
+          if (pkgKey === '16' && i === 4) addDay(`Arbain`, `Mengejar 40 waktu shalat.`);
+          else addDay(`Ibadah Madinah`, `Shalat dan Ibadah.`);
+          currentDate.setDate(currentDate.getDate() + 1);
+      }
+      addDay(`Pindah ke Makkah & Umrah`, `Menuju Makkah. Check-in ${hotel2}. Umrah Wajib.`);
+      transport.push({ date: formatDate(currentDate), from: `HOTEL MADINAH`, to: `HOTEL MAKKAH`, time: '09:00', bus: Math.ceil(dep.pax / 45) });
+      currentDate.setDate(currentDate.getDate() + 1);
+      addDay(`Ibadah Makkah`, `Shalat dan Thawaf Sunnah.`);
+      currentDate.setDate(currentDate.getDate() + 1);
+      addDay(`Ziarah Makkah`, `Mengunjungi ${fullZiarahMakkah}.`);
+      transport.push({ date: formatDate(currentDate), from: `HOTEL MAKKAH`, to: `CITY TOUR`, time: '07:30', bus: 1 });
+      currentDate.setDate(currentDate.getDate() + 1);
+      for (let i = 4; i <= pkg.makkah; i++) { addDay(`Ibadah Makkah`, `Shalat, Thawaf Sunnah.`); currentDate.setDate(currentDate.getDate() + 1); }
+      addDay("Kepulangan", `Thawaf Wada', menuju Bandara.`);
+      transport.push({ date: formatDate(currentDate), from: `HOTEL MAKKAH`, to: `AIRPORT`, time: '15:30', bus: Math.ceil(dep.pax / 45) });
+  }
+  addDay("Tiba di Indonesia", "Tiba kembali di bandara asal.");
+  return { itinerary, transport };
+}
+
+/* ===== EXPORT / IMPORT DATA (Backup JSON) ===== */
+function exportData() {
+  const data = { jadwal: dbJadwal, invoices: dbInvoices, hpp_static: { travelName: document.getElementById('travelName').value, travelContact: document.getElementById('travelContact').value, kursSAR: document.getElementById('kursSAR').value, kursUSD: document.getElementById('kursUSD').value } };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = `Backup_Umrah_${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+function triggerImportData() { document.getElementById('importDataFile').click(); }
+function handleImportData(event) {
+  const file = event.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      if(data.jadwal) { dbJadwal = data.jadwal; localStorage.setItem('umrah_jadwal', JSON.stringify(dbJadwal)); }
+      if(data.invoices) { dbInvoices = data.invoices; localStorage.setItem('umrah_invoices', JSON.stringify(dbInvoices)); }
+      if(data.hpp_static) { document.getElementById('travelName').value = data.hpp_static.travelName || ''; document.getElementById('travelContact').value = data.hpp_static.travelContact || ''; document.getElementById('kursSAR').value = data.hpp_static.kursSAR || '4.250'; document.getElementById('kursUSD').value = data.hpp_static.kursUSD || '16.200'; }
+      renderJadwal(); alert('Data berhasil di-restore!'); calculate();
+    } catch (err) { alert('File backup tidak valid.'); }
+  };
+  reader.readAsText(file); event.target.value = '';
+}
+function resetAll() { if(confirm('Hapus SEMUA data dan reset aplikasi?')) { localStorage.clear(); location.reload(); } }
+
+/* ===== INIT ===== */
+document.getElementById('muthawifPerDay-cur').value = 'SAR';
+addDeparture(new Date().toISOString().split('T')[0], 15000000, 45, 'Saudi Airlines', 'Swissotel Makkah', 'Frontel Al Harithia', 'madinah', 'SV 817');
+updateMakanUI('fullboard');
+updateHandlingFeatures();
+attachNumberFormatters();
+renderJadwal();
+calculate();
+
+// Event listener global agar form utama (di luar blok keberangkatan) langsung menghitung ulang saat diubah
+document.querySelectorAll('input, select').forEach(el => {
+  if (!el.closest('.dep-block')) {
+    el.addEventListener('change', calculate);
+    el.addEventListener('input', calculate);
+  }
+});
+</script>
+
+<!-- TEMPLATE SURAT PENAWARAN -->
 <template id="suratPenawaranTemplate">
   <style>
     body { font-family: 'Times New Roman', Times, serif; padding: 40px; color: #000; line-height: 1.5; }
@@ -441,7 +1517,7 @@
   
   <h2>SURAT PENAWARAN PAKET UMRAH</h2>
   
-  <p>Kepada Yth. Calon Jamaah Umrah,</p>
+  <p id="t-recipient-type">Kepada Yth. <b>Calon Jamaah Umrah</b>,</p>
   <p>Dengan memohon rahmat dan ridho Allah SWT, kami bermaksud menawarkan paket perjalanan Umrah dengan rincian sebagai berikut:</p>
   
   <table class="info-table">
@@ -484,6 +1560,8 @@
     * Harga dapat berubah sewaktu-waktu tanpa pemberitahuan terlebih dahulu, tergantung kurs dan ketersediaan maskapai/hotel.
   </p>
   
+  <p id="t-closing-text" style="margin-top: 20px;">Demikian penawaran ini kami sampaikan. Kami berharap dapat melayani perjalanan ibadah Bapak/Ibu.</p>
+
   <div class="footer">
     <p>Hormat Kami,</p>
     <br><br><br>
@@ -492,1330 +1570,5 @@
   
   <button class="print-btn" onclick="window.print()">🖨️ Cetak Surat Penawaran</button>
 </template>
-
-<!-- Template Itinerary -->
-<template id="itineraryTemplate">
-  <style>
-    body { font-family: Arial, sans-serif; padding: 40px; color: #000; line-height: 1.5; }
-    .header { text-align: center; border-bottom: 3px solid #0ea5e9; padding-bottom: 20px; margin-bottom: 20px; }
-    .header h1 { margin: 0; font-size: 26px; color: #0ea5e9; }
-    .header p { margin: 5px 0 0; font-size: 14px; color: #333; }
-    h2 { text-align: center; margin-top: 30px; margin-bottom: 20px; font-size: 18px; }
-    .info-table { width: 100%; margin-bottom: 20px; font-size: 14px; }
-    .info-table td { padding: 4px 8px; }
-    .info-table td:first-child { font-weight: bold; width: 180px; }
-    .schedule-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 13px; }
-    .schedule-table th, .schedule-table td { border: 1px solid #cbd5e1; padding: 10px; vertical-align: top; }
-    .schedule-table th { background: #0ea5e9; color: white; text-align: left; }
-    .schedule-table td.hari { font-weight: bold; text-align: center; width: 60px; }
-    .schedule-table td.tanggal { width: 130px; }
-    .schedule-table td.kegiatan { font-weight: bold; width: 220px; }
-    .footer { margin-top: 40px; text-align: center; font-size: 12px; color: #666; }
-    .print-btn { display: block; margin: 30px auto; padding: 12px 24px; background: #0ea5e9; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; text-align:center; font-weight: bold;}
-    @media print { body { padding: 0; } .print-btn { display: none; } }
-  </style>
-  <div class="header">
-    <h1 id="t-travelName"></h1>
-    <p id="t-travelContact"></p>
-  </div>
-  
-  <h2>ITINERARY PAKET UMRAH</h2>
-  
-  <table class="info-table">
-    <tr><td>Tanggal Keberangkatan</td><td>: <span id="t-date"></span></td></tr>
-    <tr><td>No. Penerbangan</td><td>: <span id="t-flight-no"></span></td></tr>
-    <tr><td>Maskapai Penerbangan</td><td>: <span id="t-airline"></span></td></tr>
-    <tr><td>Bandara Kedatangan</td><td>: <span id="t-arrival-airport"></span></td></tr>
-    <tr><td>Bandara Kepulangan</td><td>: <span id="t-departure-airport"></span></td></tr>
-    <tr><td>Durasi Paket</td><td>: <span id="t-duration"></span></td></tr>
-    <tr><td>Kota Pertama</td><td>: <span id="t-firstCity"></span></td></tr>
-    <tr><td>Akomodasi</td><td>: Hotel Makkah (<span id="t-hotelMakkah"></span>) & Hotel Madinah (<span id="t-hotelMadinah"></span>)</td></tr>
-  </table>
-  
-  <table class="schedule-table">
-    <thead>
-      <tr>
-        <th class="hari">Hari</th>
-        <th class="tanggal">Tanggal</th>
-        <th class="kegiatan">Kegiatan Utama</th>
-        <th>Deskripsi</th>
-      </tr>
-    </thead>
-    <tbody id="t-itineraryBody">
-    </tbody>
-  </table>
-  
-  <div class="footer">
-    <p>Dokumen ini merupakan bagian dari penawaran resmi <b id="t-travelNameFooter"></span></p>
-  </div>
-  
-  <button class="print-btn" onclick="window.print()">🖨️ Cetak Itinerary</button>
-</template>
-
-<!-- Template Logistik (Paket Info) -->
-<template id="logistikTemplate">
-  <style>
-    @page { size: landscape; margin: 15mm; }
-    body { font-family: Arial, sans-serif; color: #000; font-size: 12px; margin: 0; }
-    table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-    th, td { border: 1px solid #000; padding: 6px; text-align: center; }
-    .header-bg { background-color: #cda8f0; font-weight: bold; text-transform: uppercase; }
-    .section-title { background-color: #e9d5ff; font-weight: bold; text-transform: uppercase; }
-    .text-left { text-align: left !important; padding-left: 10px; }
-    .text-right { text-align: right !important; padding-right: 10px; }
-    .bold { font-weight: bold; }
-    
-    .top-header-table th, .top-header-table td { border: 1px solid #000; }
-    
-    .nested-table { margin: 0; width: 100%; height: 100%; border-collapse: collapse; }
-    .nested-table th, .nested-table td { border: none; border-right: 1px solid #000; border-bottom: 1px solid #000; }
-    .nested-table th:last-child, .nested-table td:last-child { border-right: none; }
-    .nested-table tr:last-child td { border-bottom: none; }
-    
-    .print-btn { display: block; margin: 20px auto; padding: 12px 24px; background: #8b5cf6; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; text-align:center; font-weight: bold;}
-    @media print {
-      .print-btn { display: none; }
-      body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    }
-  </style>
-  
-  <table class="top-header-table">
-    <tr>
-      <td class="header-bg text-left" style="width: 15%;">PROVIDER</td>
-      <td id="l-provider" class="text-left bold" colspan="8"></td>
-    </tr>
-    <tr>
-      <td class="header-bg text-left">MUASASAH</td>
-      <td id="l-muasasah" class="text-left bold" colspan="8"></td>
-    </tr>
-    <tr>
-      <td class="header-bg" colspan="2">GROUP NO</td>
-      <td class="header-bg" colspan="2">SUB AGENT NAME</td>
-      <td class="header-bg" colspan="2">NO. OF pax</td>
-      <td class="header-bg" colspan="2">TOUR LEADER</td>
-      <td class="header-bg">JAWAL</td>
-    </tr>
-    <tr>
-      <td colspan="2" class="bold" id="l-groupNo">-</td>
-      <td colspan="2" class="bold" id="l-subAgent">-</td>
-      <td colspan="2" class="bold" id="l-pax">-</td>
-      <td colspan="2" class="bold" id="l-tourLeader">-</td>
-      <td class="bold" id="l-jawal">-</td>
-    </tr>
-  </table>
-  
-  <table>
-    <tr><td colspan="8" class="section-title">Flight Information</td></tr>
-    <tr class="header-bg">
-      <th>FROM</th><th>TO</th><th>DATE</th><th>ETD</th><th>ETA</th><th>CARRIER</th><th>FLIGHT NO</th><th>REMARKS</th>
-    </tr>
-    <tbody id="l-flightBody"></tbody>
-  </table>
-
-  <table>
-    <tr><td colspan="9" class="section-title">Hotel Accommodation</td></tr>
-    <tr class="header-bg">
-      <th rowspan="2" style="width: 10%;">CITY</th><th rowspan="2" style="width: 25%;">HOTEL</th>
-      <th colspan="2">DATE</th><th colspan="4">TYPE ROOM</th><th rowspan="2" style="width: 10%;">RESV NO</th>
-    </tr>
-    <tr class="header-bg">
-      <th>IN</th><th>OUT</th><th>DBL</th><th>TRPL</th><th>QUAD</th><th>SUITE/SINGLE</th>
-    </tr>
-    <tbody id="l-hotelBody"></tbody>
-  </table>
-
-  <table>
-    <tr><td colspan="6" class="section-title">Transportation</td></tr>
-    <tr class="header-bg">
-      <th style="width: 15%;">DATE</th><th style="width: 25%;">FROM</th><th style="width: 25%;">TO</th>
-      <th style="width: 10%;">TIME</th><th style="width: 10%;">TOTAL BUS</th><th>BUS COMPANY</th>
-    </tr>
-    <tbody id="l-transBody"></tbody>
-  </table>
-
-  <table>
-    <tr><td colspan="2" class="section-title">Local Contact Person</td></tr>
-    <tr class="header-bg"><th style="width: 50%;">Name</th><th>Phone / Jawal</th></tr>
-    <tr><td class="bold" id="l-localName">-</td><td class="bold" id="l-localPhone">-</td></tr>
-  </table>
-  
-  <button class="print-btn" onclick="window.print()">🖨️ Cetak Info Paket (Logistik)</button>
-</template>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script>
-// @ts-nocheck
-/* ===== Konstanta ===== */
-const PACKAGES = {
-  '9':   { makkah: 4, madinah: 3, days: 9,  label: 'Paket 9 Hari' },
-  '12':  { makkah: 6, madinah: 4, days: 12, label: 'Paket 12 Hari' },
-  '16':  { makkah: 6, madinah: 8, days: 16, label: 'Paket 16 Hari' }
-};
-
-const TOURS = [
-  { id: 'alula',       name: 'Al Ula',              city: 'Madinah', defaultPrice: '5.000.000' },
-  { id: 'jabalmagnet', name: 'Jabal Magnet',        city: 'Madinah', defaultPrice: '2.000.000' },
-  { id: 'percetakan',  name: 'Percetakan Al-Quran', city: 'Madinah', defaultPrice: '1.500.000' },
-  { id: 'taif',        name: 'Taif',                city: 'Makkah',  defaultPrice: '4.000.000' },
-  { id: 'hudaibiyah',  name: 'Hudaibiyah',          city: 'Makkah',  defaultPrice: '1.200.000' },
-  { id: 'jeddah',      name: 'Jeddah',              city: 'Makkah',  defaultPrice: '3.500.000' }
-];
-
-const HANDLING_DATA = {
-  basic: {
-    name: 'BASIC',
-    features: ['Welcome drink', 'Handling bandara', 'Meal box', 'Handling hotel', 'Distribusi koper', 'Greeting card', 'Snack hemat', 'Tips porter', 'Tips bellboy', 'Tips mandub', 'Tips supir', 'Air Zamzam 5L', 'Dokumentasi', 'Opsional Mutawwif'],
-    notIncluded: ['Mutawwif & Mutawwifah Raudhah'],
-    notes: ['Mutawwif: 250 SAR/hari', 'Mutawwifah: 200 SAR/hari', 'Jasa dorong umrah: 350 SAR'],
-    prices: { '4-7': 366, '8-11': 182, '12-15': 128, '16-19': 102, '20-23': 87, '24-27': 77, '28-31': 70, '32-35': 65, '36-39': 61, '40-43': 58, '44-47': 55 }
-  },
-  premium: {
-    name: 'PREMIUM',
-    features: ['Semua fasilitas paket Basic', 'X-Banner penyambutan', 'Mealbox (Al Baik)', 'Snack premium', 'Parcel buah', 'Air Mineral'],
-    notIncluded: ['Mutawwif & Mutawwifah Raudhah'],
-    notes: ['Mutawwif: 250 SAR/hari', 'Mutawwifah: 200 SAR/hari', 'Jasa dorong umrah: 350 SAR'],
-    prices: { '4-7': 390, '8-11': 203, '12-15': 148, '16-19': 122, '20-23': 107, '24-27': 97, '28-31': 90, '32-35': 85, '36-39': 81, '40-43': 78, '44-47': 75 }
-  },
-  vip: {
-    name: 'VIP',
-    features: ['Semua fasilitas paket Basic', 'X-Banner penyambutan', 'Arabian Kuliner', 'Snack VIP', 'Parcel buah VIP', 'Air Zamzam 1 galon', 'Gratis Al Baik'],
-    notIncluded: ['Mutawwif & Mutawwifah Raudhah'],
-    notes: ['Mutawwif: 250 SAR/hari', 'Mutawwifah: 200 SAR/hari', 'Jasa dorong umrah: 350 SAR'],
-    prices: { '4-7': 600, '8-11': 317, '12-15': 234, '16-19': 195, '20-23': 171, '24-27': 156, '28-31': 146, '32-35': 138, '36-39': 132, '40-43': 127, '44-47': 123 }
-  }
-};
-
-let latestDepartures = []; 
-
-function formatNumberInput(input) {
-  let value = input.value.replace(/[^0-9]/g, '');
-  if (value) {
-    input.value = parseInt(value, 10).toLocaleString('id-ID');
-  } else {
-    input.value = '';
-  }
-}
-
-function parseRupiah(str) {
-  if(!str) return 0;
-  return parseFloat(str.replace(/\./g, '')) || 0;
-}
-
-function val(id) {
-  const el = document.getElementById(id);
-  if (!el) return 0;
-  return parseRupiah(el.value);
-}
-
-const fmt  = n  => 'Rp ' + Math.round(n).toLocaleString('id-ID');
-const fmtSAR = n => 'SR ' + Math.round(n).toLocaleString('id-ID');
-const fmtUSD = n => 'USD $' + Math.round(n).toLocaleString('id-ID');
-
-function attachNumberFormatters() {
-  document.querySelectorAll('.num-format').forEach(input => {
-    input.type = 'text';
-    input.setAttribute('inputmode', 'numeric');
-    input.removeEventListener('input', handleFormat);
-    input.addEventListener('input', handleFormat);
-  });
-}
-
-function handleFormat(e) {
-  formatNumberInput(e.target);
-  const event = new Event('change', { bubbles: true });
-  e.target.dispatchEvent(event);
-}
-
-if (typeof pdfjsLib !== 'undefined') {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-  document.getElementById('pdfSupportNote').textContent = '✓ PDF.js siap.';
-} else {
-  document.getElementById('pdfSupportNote').textContent = '⚠️ PDF.js gagal dimuat.';
-  document.getElementById('pdfSupportNote').style.color = '#dc2626';
-}
-
-function getRates() { return { IDR: 1, SAR: val('kursSAR') || 1, USD: val('kursUSD') || 1 }; }
-function toIDR(id) {
-  const amount = val(id);
-  const curEl  = document.getElementById(id + '-cur');
-  if (!curEl) return amount;
-  return amount * (getRates()[curEl.value] || 1);
-}
-function getMakanMode() {
-  const el = document.querySelector('input[name="makanMode"]:checked');
-  return el ? el.value : 'fullboard';
-}
-
-function syncPkgSelect(val) {
-  document.getElementById('viewPkgSelect').value = val;
-  document.getElementById('exportPkgSelect').value = val;
-}
-
-function updateConversions() {
-  const rates = getRates();
-  const dSAR = document.getElementById('kursSARDisplay');
-  if (dSAR) dSAR.textContent = fmt(rates.SAR);
-  const dUSD = document.getElementById('kursUSDDisplay');
-  if (dUSD) dUSD.textContent = fmt(rates.USD);
-
-  document.querySelectorAll('input[id]').forEach(inp => {
-    const convEl = document.getElementById(inp.id + '-conv');
-    const curSel = document.getElementById(inp.id + '-cur');
-    if (!convEl || !curSel) return;
-    if (inp.disabled) { convEl.style.display = 'none'; return; }
-    const amount = val(inp.id);
-    const cur = curSel.value;
-    if (cur !== 'IDR' && amount > 0) {
-      convEl.textContent = '≈ ' + fmt(amount * rates[cur]);
-      convEl.style.display = 'block';
-    } else {
-      convEl.style.display = 'none';
-    }
-  });
-
-  document.querySelectorAll('.dep-block').forEach(block => {
-    const flightInp = block.querySelector('.dep-flight');
-    const curSel    = block.querySelector('.dep-cur');
-    const convEl    = block.querySelector('.dep-conv');
-    if (!flightInp || !curSel || !convEl) return;
-    const amount = parseRupiah(flightInp.value);
-    const cur = curSel.value;
-    if (cur !== 'IDR' && amount > 0) {
-      convEl.textContent = '≈ ' + fmt(amount * rates[cur]);
-      convEl.style.display = 'block';
-    } else {
-      convEl.style.display = 'none';
-    }
-  });
-}
-
-function applyDefaultCurrency() {
-  const def = document.getElementById('defaultCur').value;
-  document.querySelectorAll('select.cur').forEach(sel => { sel.value = def; });
-  calculate();
-}
-
-function getHandlingPriceUSD(pax, tier) {
-  const prices = HANDLING_DATA[tier].prices;
-  if (pax <= 7) return prices['4-7'];
-  if (pax <= 11) return prices['8-11'];
-  if (pax <= 15) return prices['12-15'];
-  if (pax <= 19) return prices['16-19'];
-  if (pax <= 23) return prices['20-23'];
-  if (pax <= 27) return prices['24-27'];
-  if (pax <= 31) return prices['28-31'];
-  if (pax <= 35) return prices['32-35'];
-  if (pax <= 39) return prices['36-39'];
-  if (pax <= 43) return prices['40-43'];
-  return prices['44-47']; 
-}
-
-function updateHandlingFeatures() {
-  const tier = document.getElementById('handlingTier').value;
-  const container = document.getElementById('handlingFeaturesDisplay');
-  
-  if (tier === 'none') {
-    container.innerHTML = '<div style="text-align: center; color: #64748b; padding: 10px;">Tanpa layanan Handling Vendor.</div>';
-    calculate();
-    return;
-  }
-
-  const data = HANDLING_DATA[tier];
-  let featList = data.features.map(f => '<li>' + f + '</li>').join('');
-  let notIncList = data.notIncluded.map(f => '<li>' + f + '</li>').join('');
-  let notesList = data.notes.map(n => '• ' + n).join('<br>');
-
-  container.innerHTML = 
-    '<div><span style="font-weight: 700; color: #b45309; margin-bottom: 4px; display:block;">✅ Termasuk:</span><ul style="margin: 0; padding-left: 18px; color: #4b5563;">' + featList + '</ul></div>' +
-    '<div style="margin-top:10px;"><span style="font-weight: 700; color: #dc2626; margin-bottom: 4px; display:block;">❌ Tidak Termasuk:</span><ul style="margin: 0; padding-left: 18px; color: #dc2626;">' + notIncList + '</ul>' +
-    '<span style="font-weight: 700; color: #b45309; margin-top: 8px; display:block;">📌 Catatan:</span><div style="color: #92400e; font-style: italic; font-size: 11px; background: #fef3c7; padding: 6px; border-radius: 4px; margin-top:4px;">' + notesList + '</div></div>';
-  calculate();
-}
-
-function updateMakanUI(mode) {
-  document.querySelectorAll('.makan-toggle label').forEach(l => {
-    l.classList.toggle('active', l.dataset.mode === mode);
-  });
-  const isFullboard = mode === 'fullboard';
-  const inp = document.getElementById('makanPerDay');
-  const sel = document.getElementById('makanPerDay-cur');
-  const wrap = document.getElementById('makanPerDayWrap');
-  const statusLbl = document.getElementById('makanStatusLabel');
-  inp.disabled = isFullboard;
-  sel.disabled = isFullboard;
-  if (isFullboard) {
-    wrap.style.opacity = '0.4';
-    wrap.style.pointerEvents = 'none';
-    statusLbl.style.display = 'inline';
-    statusLbl.textContent = '(nonaktif — Fullboard)';
-  } else {
-    wrap.style.opacity = '1';
-    wrap.style.pointerEvents = 'auto';
-    statusLbl.style.display = 'none';
-  }
-  calculate();
-}
-
-function calculateDates(startDateStr, firstCity, makkahNights, madinahNights) {
-  if (!startDateStr) return { mIn: '-', mOut: '-', dIn: '-', dOut: '-' };
-  let current = new Date(startDateStr);
-  const format = (d) => d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }).replace(/\./g, '-');
-
-  let mIn, mOut, dIn, dOut;
-
-  if (firstCity === 'makkah') {
-    mIn = new Date(current);
-    current.setDate(current.getDate() + makkahNights);
-    mOut = new Date(current);
-    
-    dIn = new Date(current);
-    current.setDate(current.getDate() + madinahNights);
-    dOut = new Date(current);
-  } else {
-    dIn = new Date(current);
-    current.setDate(current.getDate() + madinahNights);
-    dOut = new Date(current);
-    
-    mIn = new Date(current);
-    current.setDate(current.getDate() + makkahNights);
-    mOut = new Date(current);
-  }
-  return { mIn: format(mIn), mOut: format(mOut), dIn: format(dIn), dOut: format(dOut) };
-}
-
-function addDeparture(name = '', flight = '', pax = '', airline = '', hotelMakkah = '', hotelMadinah = '', firstCity = 'madinah', flightNo = '') {
-  const wrap = document.getElementById('departures');
-  const block = document.createElement('div');
-  block.className = 'dep-block';
-  block.style.background = '#f8fafc';
-  block.style.padding = '15px';
-  block.style.borderRadius = '8px';
-  block.style.border = '1px solid #e2e8f0';
-  block.style.marginBottom = '15px';
-
-  const def = document.getElementById('defaultCur').value;
-  
-  const tourHTML = TOURS.map(t => `
-    <div class="tour-item">
-      <label>
-        <input type="checkbox" class="tour-cb" data-tour="${t.id}" onchange="toggleTourInput(this)"> ${t.name}
-      </label>
-      <div class="tour-price-wrap">
-        <div class="input-group">
-          <input type="text" class="tour-price num-format" data-tour="${t.id}" value="${t.defaultPrice}">
-          <select class="tour-cur cur" data-tour="${t.id}" onchange="calculate()">
-            <option value="IDR">IDR</option>
-            <option value="SAR">SAR</option>
-            <option value="USD">USD</option>
-          </select>
-        </div>
-      </div>
-    </div>
-  `).join('');
-
-  block.innerHTML = 
-    '<div class="dep-grid">' +
-      '<div><label>Tanggal Berangkat</label><input class="dep-date" type="date" value="' + name + '"></div>' +
-      '<div><label>No. Penerbangan</label>' +
-        '<div style="display:flex; gap:4px;">' +
-          '<input class="dep-flight-no" value="' + flightNo + '" placeholder="cth: SV 817">' +
-          '<a href="#" class="btn-google" onclick="searchFlight(this)" title="Cek Google">🔍</a>' +
-        '</div></div>' +
-      '<div><label>Maskapai</label><input class="dep-airline" value="' + airline + '" placeholder="cth: Saudi Airlines"></div>' +
-      '<div><label>Kota Pertama</label>' +
-        '<select class="dep-first-city">' +
-          '<option value="madinah" ' + (firstCity==='madinah'?'selected':'') + '>Madinah Dulu</option>' +
-          '<option value="makkah" ' + (firstCity==='makkah'?'selected':'') + '>Makkah Dulu</option>' +
-        '</select></div>' +
-      '<div><label>Pax Dewasa</label><input class="dep-pax" type="number" value="' + pax + '" placeholder="0"></div>' +
-      '<div><label>Pax Anak</label><input class="dep-child" type="number" value="0" placeholder="0"></div>' +
-      '<div><label>Harga Tiket / pax</label>' +
-        '<div class="input-group">' +
-          '<input class="dep-flight num-format" type="text" inputmode="numeric" value="' + flight + '" placeholder="0">' +
-          '<select class="dep-cur cur"><option>IDR</option><option>SAR</option><option>USD</option></select>' +
-        '</div>' +
-        '<small class="conv dep-conv" style="display:none;"></small>' +
-      '</div>' +
-      '<div style="display:flex; gap:5px; margin-top: 15px;">' +
-        '<button class="btn btn-duplicate" onclick="duplicateDeparture(this)" style="flex:1;">📋 Duplikat</button>' +
-        '<button class="btn btn-danger" onclick="this.closest(\'.dep-block\').remove(); calculate();" style="flex:1;">Hapus</button>' +
-      '</div>' +
-    '</div>' +
-
-    '<div style="margin-top:15px;">' +
-      '<div style="font-size:12px; font-weight:bold; color:#0f766e; margin-bottom:8px;">Tambahan City Tour (Centang untuk memasukkan harga):</div>' +
-      '<div class="tour-container">' + tourHTML + '</div>' +
-    '</div>' +
-
-    '<div class="logistik-toggle-area">' +
-      '<label style="display:inline-flex; align-items:center; gap:8px; cursor:pointer; font-weight:600; font-size:13px; color:#0f766e;">' +
-        '<input type="checkbox" onchange="toggleLogistik(this)" style="width:18px; height:18px;"> ' +
-        'Tampilkan Data Logistik (Hotel, TL, Bandara)' +
-      '</label>' +
-    '</div>' +
-
-    '<div class="logistik-fields">' +
-      '<div class="dep-grid">' +
-        '<div><label>Provider / LA</label><input class="dep-provider" type="text" value="AL HARAMAIN TOURS"></div>' +
-        '<div><label>Muasasah</label><input class="dep-muasasah" type="text" value="Muasasah Al Rajhi"></div>' +
-      '</div>' +
-      '<div class="dep-grid">' +
-        '<div><label>Tour Leader</label><input class="dep-tour-leader" type="text" value="H. Hikam"></div>' +
-        '<div><label>No. Jawal (TL)</label><input class="dep-jawal" type="text" value="+6281295957313"></div>' +
-      '</div>' +
-      '<div class="dep-grid">' +
-        '<div><label>Local Contact (Nama)</label><input class="dep-local-name" type="text" value="Abdul Ghani"></div>' +
-        '<div><label>Local Contact (No. HP)</label><input class="dep-local-phone" type="text" value="+6287781511313"></div>' +
-      '</div>' +
-      '<div class="dep-grid">' +
-        '<div><label>Hotel Makkah</label><input class="dep-hotel-makkah" value="' + hotelMakkah + '"></div>' +
-        '<div><label>Hotel Madinah</label><input class="dep-hotel-madinah" value="' + hotelMadinah + '"></div>' +
-        '<div><label>Bandara Kedatangan</label><input class="dep-arrival-airport" value="CGK - JED"></div>' +
-        '<div><label>Bandara Kepulangan</label><input class="dep-departure-airport" value="MED - CGK"></div>' +
-      '</div>' +
-    '</div>';
-
-  wrap.appendChild(block);
-  block.querySelector('.dep-cur').value = def;
-  block.querySelectorAll('.tour-cur').forEach(sel => sel.value = def);
-  block.querySelectorAll('.num-format').forEach(input => {
-    input.removeEventListener('input', handleFormat);
-    input.addEventListener('input', handleFormat);
-  });
-  block.querySelectorAll('input, select').forEach(i => {
-    i.addEventListener('input', calculate);
-    i.addEventListener('change', calculate);
-  });
-  calculate();
-}
-
-function toggleTourInput(cb) {
-  const wrap = cb.closest('.tour-item').querySelector('.tour-price-wrap');
-  if (cb.checked) wrap.classList.add('active');
-  else wrap.classList.remove('active');
-  calculate();
-}
-
-function toggleLogistik(checkbox) {
-  const block = checkbox.closest('.dep-block');
-  const panel = block.querySelector('.logistik-fields');
-  if (checkbox.checked) panel.classList.add('active');
-  else panel.classList.remove('active');
-}
-
-function searchFlight(el) {
-  const inputVal = el.closest('div').querySelector('.dep-flight-no').value;
-  if (!inputVal) { alert('Isi Nomor Penerbangan terlebih dahulu.'); return; }
-  const query = encodeURIComponent('penerbangan ' + inputVal);
-  window.open('https://www.google.com/search?q=' + query, '_blank');
-}
-
-function duplicateDeparture(btn) {
-  const block = btn.closest('.dep-block');
-  const date = block.querySelector('.dep-date').value;
-  const firstCity = block.querySelector('.dep-first-city').value;
-  const pax = block.querySelector('.dep-pax').value;
-  const child = block.querySelector('.dep-child').value;
-  const flightNo = block.querySelector('.dep-flight-no').value;
-  const airline = block.querySelector('.dep-airline').value;
-  const flightVal = block.querySelector('.dep-flight').value;
-  
-  addDeparture(date, flightVal, pax, airline, '', '', firstCity, flightNo);
-  const newBlock = document.querySelectorAll('.dep-block')[document.querySelectorAll('.dep-block').length - 1];
-  newBlock.querySelector('.dep-airline').value = airline;
-  newBlock.querySelector('.dep-child').value = child;
-  
-  const isLogistikOpen = block.querySelector('.logistik-fields').classList.contains('active');
-  newBlock.querySelector('.dep-provider').value = block.querySelector('.dep-provider').value;
-  newBlock.querySelector('.dep-muasasah').value = block.querySelector('.dep-muasasah').value;
-  newBlock.querySelector('.dep-tour-leader').value = block.querySelector('.dep-tour-leader').value;
-  newBlock.querySelector('.dep-jawal').value = block.querySelector('.dep-jawal').value;
-  newBlock.querySelector('.dep-local-name').value = block.querySelector('.dep-local-name').value;
-  newBlock.querySelector('.dep-local-phone').value = block.querySelector('.dep-local-phone').value;
-  newBlock.querySelector('.dep-hotel-makkah').value = block.querySelector('.dep-hotel-makkah').value;
-  newBlock.querySelector('.dep-hotel-madinah').value = block.querySelector('.dep-hotel-madinah').value;
-  newBlock.querySelector('.dep-arrival-airport').value = block.querySelector('.dep-arrival-airport').value;
-  newBlock.querySelector('.dep-departure-airport').value = block.querySelector('.dep-departure-airport').value;
-  
-  if (isLogistikOpen) {
-    newBlock.querySelector('.logistik-toggle-area input').checked = true;
-    newBlock.querySelector('.logistik-fields').classList.add('active');
-  }
-  
-  block.querySelectorAll('.tour-item').forEach(item => {
-    const cb = item.querySelector('.tour-cb');
-    if (cb.checked) {
-      const tid = cb.dataset.tour;
-      const newCb = newBlock.querySelector(`.tour-cb[data-tour="${tid}"]`);
-      if (newCb) {
-        newCb.checked = true;
-        toggleTourInput(newCb);
-        newBlock.querySelector(`.tour-price[data-tour="${tid}"]`).value = item.querySelector('.tour-price').value;
-        newBlock.querySelector(`.tour-cur[data-tour="${tid}"]`).value = item.querySelector('.tour-cur').value;
-      }
-    }
-  });
-  calculate();
-}
-
-async function handlePDFUpload(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  if (!file.name.toLowerCase().endsWith('.pdf')) { alert('File harus berformat PDF.'); event.target.value = ''; return; }
-  if (typeof pdfjsLib === 'undefined') { alert('PDF.js belum termuat.'); event.target.value = ''; return; }
-  document.getElementById('loadingOverlay').style.display = 'flex';
-  try {
-    const arrayBuffer = await file.arrayBuffer();
-    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-    let fullText = '';
-    for (let i = 1; i <= pdf.numPages; i++) {
-      const page = await pdf.getPage(i);
-      const content = await page.getTextContent();
-      fullText += content.items.map(item => item.str).join(' ') + '\n';
-    }
-    document.getElementById('loadingOverlay').style.display = 'none';
-    if (!fullText.trim()) { alert('Tidak ada teks di PDF ini.'); return; }
-    const parsed = parsePDFText(fullText);
-    showPDFPreview(parsed, file.name, fullText);
-  } catch (err) {
-    document.getElementById('loadingOverlay').style.display = 'none';
-    alert('Gagal membaca PDF: ' + err.message);
-  }
-}
-
-function parsePDFText(text) {
-  const results = {};
-  const fields = [
-    { id: 'visa', kw: ['visa umrah', 'biaya visa', 'visa'], label: 'Visa Umrah' },
-    { id: 'transport', kw: ['transport bus', 'bus', 'transportasi'], label: 'Transport Bus' },
-    { id: 'muthawifPerDay', kw: ['muthawif', 'mutawif', 'guide', 'pembimbing'], label: 'Muthawif / hari' },
-    { id: 'perlengkapan', kw: ['perlengkapan', 'perlengkapan umrah'], label: 'Perlengkapan' },
-    { id: 'asuransi', kw: ['asuransi', 'asuransi perjalanan'], label: 'Asuransi' },
-    { id: 'rateMakkah', kw: ['hotel makkah', 'makkah hotel', 'hotel mekkah'], label: 'Hotel Makkah / malam' },
-    { id: 'rateMadinah', kw: ['hotel madinah', 'madinah hotel', 'hotel madina'], label: 'Hotel Madinah / malam' },
-    { id: 'makanPerDay', kw: ['biaya makan', 'makan', 'meal', 'konsumsi', 'breakfast', 'fullboard'], label: 'Makan / hari' }
-  ];
-  const lower = text.toLowerCase().replace(/\s+/g, ' ');
-  for (const f of fields) {
-    for (const kw of f.kw) {
-      const regex = new RegExp(escapeRegex(kw) + '[^0-9]{0,60}?((?:sar|sr|rp|idr|usd|\\$)\\s*)?([0-9][0-9.,]*)', 'i');
-      const m = lower.match(regex);
-      if (m) {
-        const value = parseNum(m[2]);
-        if (value > 0) {
-          const currency = detectCurrencyFromMatch(lower, m.index, m[1]);
-          results[f.id] = { value, currency, label: f.label, snippet: text.substring(Math.max(0, m.index - 10), m.index + m[0].length + 10).trim() };
-          break;
-        }
-      }
-    }
-  }
-  return results;
-}
-
-function escapeRegex(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
-function detectCurrencyFromMatch(text, index, currencyMatch) {
-  if (currencyMatch) {
-    const c = currencyMatch.trim().toLowerCase();
-    if (c === 'sar' || c === 'sr') return 'SAR';
-    if (c === 'usd' || c === '$') return 'USD';
-    if (c === 'rp' || c === 'idr') return 'IDR';
-  }
-  const around = text.substring(Math.max(0, index - 15), index + 60).toLowerCase();
-  if (/\b(sar|sr|rial|riyal)\b/i.test(around)) return 'SAR';
-  if (/\b(usd|dollar|\$)\b/i.test(around)) return 'USD';
-  if (/\b(rp|idr|rupiah)\b/i.test(around)) return 'IDR';
-  return null;
-}
-function parseNum(str) {
-  if (!str) return 0;
-  let s = String(str).replace(/\s/g, '').replace(/[.,]+$/, '');
-  if (!s) return 0;
-  const dots = (s.match(/\./g) || []).length;
-  const commas = (s.match(/,/g) || []).length;
-  if (dots > 0 && commas > 0) { if (s.lastIndexOf('.') > s.lastIndexOf(',')) s = s.replace(/,/g, ''); else s = s.replace(/\./g, '').replace(',', '.'); }
-  else if (dots > 1) { s = s.replace(/\./g, ''); }
-  else if (commas > 1) { s = s.replace(/,/g, ''); }
-  else if (dots === 1 && /\.\d{3}$/.test(s)) { s = s.replace(/\./g, ''); }
-  else if (commas === 1 && /,\d{3}$/.test(s)) { s = s.replace(/,/g, ''); }
-  else if (commas === 1) { s = s.replace(',', '.'); }
-  return parseFloat(s) || 0;
-}
-function escapeHtml(str) { return String(str).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
-
-function showPDFPreview(parsed, filename, rawText) {
-  const modal = document.getElementById('pdfModal');
-  const resultsDiv = document.getElementById('pdfResults');
-  
-  const fieldOrder = ['visa','transport','muthawifPerDay','perlengkapan','asuransi','rateMakkah','rateMadinah','makanPerDay'];
-  let rows = '';
-  for (const fid of fieldOrder) {
-    if (parsed[fid]) {
-      const p = parsed[fid];
-      const cur = p.currency || 'IDR';
-      rows += `
-        <tr>
-          <td style="text-align:left; border:1px solid #ddd; padding:8px;"><input type="checkbox" checked data-import-field="${fid}"> ${p.label}</td>
-          <td style="border:1px solid #ddd; padding:8px;"><input type="number" data-import-value="${fid}" value="${p.value}" style="width:100px; text-align:right;"></td>
-          <td style="border:1px solid #ddd; padding:8px;"><select data-import-cur="${fid}">
-            <option value="IDR" ${cur==='IDR'?'selected':''}>IDR</option>
-            <option value="SAR" ${cur==='SAR'?'selected':''}>SAR</option>
-            <option value="USD" ${cur==='USD'?'selected':''}>USD</option>
-          </select></td>
-        </tr>
-        <tr><td colspan="3" style="text-align:left; font-size:10px; color:#94a3b8; font-style:italic; border:1px solid #ddd; padding:4px 8px;">↳ Ditemukan: "...${escapeHtml(p.snippet)}..."</td></tr>`;
-    }
-  }
-  if (!rows) rows = '<tr><td colspan="3" style="text-align:center; padding:20px; color:#94a3b8;">Tidak ada nilai biaya yang terdeteksi otomatis.</td></tr>';
-
-  resultsDiv.innerHTML = `
-    <div style="font-size:13px; color:#64748b; margin-bottom:12px;">File: <b>${escapeHtml(filename)}</b></div>
-    <table style="width:100%; border-collapse:collapse;">${rows}</table>
-    <details style="margin-top:12px;">
-      <summary style="cursor:pointer; font-size:12px; color:#0f766e; font-weight:600;">Lihat teks mentah PDF</summary>
-      <pre style="max-height:200px; overflow:auto; background:#f8fafc; padding:10px; border-radius:6px; font-size:11px; margin-top:8px;">${escapeHtml(rawText.substring(0, 3000))}${rawText.length > 3000 ? '\n...(terpotong)' : ''}</pre>
-    </details>`;
-  modal.style.display = 'flex';
-}
-
-function applyPDFImport() {
-  document.querySelectorAll('[data-import-field]').forEach(cb => {
-    if (!cb.checked) return;
-    const fid = cb.dataset.importField;
-    const valInput = document.querySelector(`[data-import-value="${fid}"]`);
-    const curSelect = document.querySelector(`[data-import-cur="${fid}"]`);
-    if (valInput) { 
-      const target = document.getElementById(fid); 
-      if (target) target.value = parseInt(valInput.value, 10).toLocaleString('id-ID');
-    }
-    if (curSelect) { const targetCur = document.getElementById(`${fid}-cur`); if (targetCur) targetCur.value = curSelect.value; }
-  });
-  document.getElementById('pdfModal').style.display = 'none';
-  document.getElementById('pdfFile').value = '';
-  calculate();
-}
-
-function calculate() {
-  updateConversions();
-  const rates = getRates();
-  const isFullboard = getMakanMode() === 'fullboard';
-  const handlingTier = document.getElementById('handlingTier').value;
-  const viewPkg = document.getElementById('viewPkgSelect').value;
-
-  const fixed = { visa: toIDR('visa'), perlengkapan: toIDR('perlengkapan'), asuransi: toIDR('asuransi') };
-  const transportTotal = toIDR('transport');
-  const muthawifRate   = toIDR('muthawifPerDay');
-  const rateMakkah  = toIDR('rateMakkah');
-  const rateMadinah = toIDR('rateMadinah');
-  const makanPerDay = isFullboard ? 0 : toIDR('makanPerDay');
-  const overheadPct = val('overhead');
-  const marginPct   = val('margin');
-
-  latestDepartures = []; 
-  document.querySelectorAll('.dep-block').forEach(block => {
-    const flightInp = block.querySelector('.dep-flight');
-    const flightRaw = parseRupiah(flightInp.value);
-    const depCur = block.querySelector('.dep-cur').value;
-    const flight = flightRaw * (rates[depCur] || 1);
-    const pax = Math.max(1, parseFloat(block.querySelector('.dep-pax').value) || 1);
-    const dateStr = block.querySelector('.dep-date').value;
-    const firstCity = block.querySelector('.dep-first-city').value;
-    
-    const flightNo = block.querySelector('.dep-flight-no').value || '-';
-    const airline = block.querySelector('.dep-airline').value || '-';
-    const providerName = block.querySelector('.dep-provider').value || '-';
-    const muasasahName = block.querySelector('.dep-muasasah').value || '-';
-    
-    const tl = block.querySelector('.dep-tour-leader').value || '-';
-    const jawal = block.querySelector('.dep-jawal').value || '-';
-    const localName = block.querySelector('.dep-local-name').value || '-';
-    const localPhone = block.querySelector('.dep-local-phone').value || '-';
-    const hMakkah = block.querySelector('.dep-hotel-makkah').value || '-';
-    const hMadinah = block.querySelector('.dep-hotel-madinah').value || '-';
-    const arrAirport = block.querySelector('.dep-arrival-airport').value || 'CGK - JED';
-    const depAirport = block.querySelector('.dep-departure-airport').value || 'MED - CGK';
-
-    const transportPerPax = transportTotal / pax;
-    const muthawifPerPaxByDay = {};
-    for (const k in PACKAGES) {
-      muthawifPerPaxByDay[k] = (muthawifRate * PACKAGES[k].days) / pax;
-    }
-
-    let handlingUSD = 0;
-    let handlingIDR = 0;
-    if (handlingTier !== 'none') {
-      handlingUSD = getHandlingPriceUSD(pax, handlingTier);
-      handlingIDR = handlingUSD * rates.USD;
-    }
-
-    const selected = [];
-    block.querySelectorAll('.tour-cb:checked').forEach(cb => {
-      const tid = cb.dataset.tour;
-      const td = TOURS.find(t => t.id === tid);
-      const priceInput = block.querySelector(`.tour-price[data-tour="${tid}"]`);
-      const curSelect = block.querySelector(`.tour-cur[data-tour="${tid}"]`);
-      
-      if (priceInput && curSelect) {
-        const amount = parseRupiah(priceInput.value);
-        const cur = curSelect.value;
-        const total = amount * (rates[cur] || 1); 
-        if (total > 0) selected.push({ id: tid, name: td.name, city: td.city, total, perPax: total / pax });
-      }
-    });
-    const tourTotalGroup = selected.reduce((s, t) => s + t.total, 0);
-    const tourPerPax = selected.reduce((s, t) => s + t.perPax, 0);
-
-    const res = {};
-    for (const key in PACKAGES) {
-      const p = PACKAGES[key];
-      const hM = rateMakkah * p.makkah;
-      const hMd = rateMadinah * p.madinah;
-      const makan = makanPerDay * p.days;
-      const direct = flight + fixed.visa + hM + hMd
-                   + transportPerPax + muthawifPerPaxByDay[key] + handlingIDR + makan
-                   + fixed.perlengkapan + fixed.asuransi + tourPerPax;
-      const overhead = direct * overheadPct / 100;
-      const hpp = direct + overhead;
-      const margin = hpp * marginPct / 100;
-      res[key] = { hMakkah: hM, hMadinah: hMd, makan, overhead, hpp, margin, selling: hpp + margin };
-    }
-
-    const datesPerPkg = {};
-    for (const key in PACKAGES) {
-      const p = PACKAGES[key];
-      datesPerPkg[key] = calculateDates(dateStr, firstCity, p.makkah, p.madinah);
-    }
-
-    latestDepartures.push({
-      name: dateStr || 'Tanpa Nama', flightNo, airline, arrivalAirport: arrAirport, departureAirport: depAirport,
-      etd: '15:40', eta: '21:45', providerName, muasasahName, tourLeader: tl, jawal: jawal, localName, localPhone,
-      paxChild: parseFloat(block.querySelector('.dep-child').value) || 0, hotelMakkah: hMakkah, hotelMadinah: hMadinah, firstCity,
-      flight, pax, tours: selected, tourTotalGroup, tourPerPax, transportPerPax, muthawifPerPaxByDay, handlingUSD, handlingIDR,
-      results: res, dates: datesPerPkg
-    });
-  });
-
-  const exportSelect = document.getElementById('exportDepSelect');
-  exportSelect.innerHTML = '';
-  latestDepartures.forEach((dep, i) => {
-    const opt = document.createElement('option');
-    opt.value = i;
-    opt.textContent = (dep.name ? new Date(dep.name).toLocaleDateString('id-ID') : 'Tanpa Tanggal') + ' - ' + dep.flightNo + ' (' + dep.pax + ' pax)';
-    exportSelect.appendChild(opt);
-  });
-
-  const out = document.getElementById('results');
-  if (!latestDepartures.length) { out.innerHTML = '<div style="padding:20px; text-align:center; color:#94a3b8;">Belum ada keberangkatan.</div>'; return; }
-
-  let html = '';
-  latestDepartures.forEach((dep) => {
-    const tourSummary = dep.tours.length ? dep.tours.map(t => t.name).join(' + ') + ' — Total grup <b>' + fmt(dep.tourTotalGroup) + '</b> ÷ ' + dep.pax + ' pax = <b>' + fmt(dep.tourPerPax) + '/pax</b>' : 'tidak ada';
-    const dateFormatted = dep.name ? new Date(dep.name).toLocaleDateString('id-ID', {day:'2-digit', month:'long', year:'numeric'}) : '-';
-
-    html += `<div style="background:white; border-radius:12px; padding:15px; margin-bottom:15px; box-shadow:0 2px 8px rgba(0,0,0,.05); border:1px solid #e2e8f0;">
-      <h3 style="color:#0f766e; margin:0 0 10px 0; font-size:16px;">📅 ${dateFormatted} <span style="font-size:12px;font-weight:normal;color:#64748b">— ${dep.pax} pax</span></h3>
-      <div style="font-size:12px; color:#475569; margin-bottom:10px; line-height:1.5;">
-        ✈️ Penerbangan: <b>${dep.flightNo} (${dep.airline})</b><br>
-        🛬 Bandara Kedatangan: <b>${dep.arrivalAirport}</b> | 🛫 Bandara Kepulangan: <b>${dep.departureAirport}</b><br>
-        🏨 Makkah: <b>${dep.hotelMakkah}</b> | Madinah: <b>${dep.hotelMadinah}</b><br>
-        🚩 Destinasi Pertama: <b>${dep.firstCity === 'makkah' ? 'Makkah' : 'Madinah'}</b>
-      </div>
-      <p style="font-size:12px; color:#7c3aed; margin: 4px 0;">🧭 City tour: ${tourSummary}</p>
-      <div class="table-responsive">
-        <table>
-          <thead><tr><th class="left">Komponen Biaya / pax</th><th>${PACKAGES[viewPkg].label}</th></tr></thead>
-          <tbody>`;
-
-    const rows = [
-      ['Tiket Pesawat', () => dep.flight],
-      ['Visa',          () => fixed.visa],
-      ['Hotel Makkah',  () => dep.results[viewPkg].hMakkah],
-      ['Hotel Madinah', () => dep.results[viewPkg].hMadinah],
-      ['Transport Bus <span class="group-tag" style="font-size:10px;color:#4338ca;margin-left:4px;">÷ ' + dep.pax + '</span>', () => dep.transportPerPax],
-      ['Muthawif <span class="group-tag" style="font-size:10px;color:#4338ca;margin-left:4px;">× ' + dep.pax + '</span>', () => dep.muthawifPerPaxByDay[viewPkg]],
-      ['Handling Service', () => dep.handlingIDR],
-      ['Makan', () => dep.results[viewPkg].makan],
-      ['Perlengkapan',  () => fixed.perlengkapan],
-      ['Asuransi',      () => fixed.asuransi]
-    ];
-    
-    rows.forEach(([label, fn]) => {
-      html += `<tr><td class="left">${label}</td><td>${fmt(fn())}</td></tr>`;
-    });
-
-    if (dep.tours.length) {
-      dep.tours.forEach(t => {
-        html += `<tr class="tour-row"><td class="left">↳ ${t.name}</td><td>${fmt(t.perPax)}</td></tr>`;
-      });
-      html += `<tr style="background:#f5f3ff; color:#6d28d9; font-weight:600;"><td class="left">Subtotal City Tour</td><td>${fmt(dep.tourPerPax)}</td></tr>`;
-    }
-
-    html += `<tr><td class="left">Overhead</td><td>${fmt(dep.results[viewPkg].overhead)}</td></tr>`;
-    html += `<tr class="hpp-row"><td class="left">HPP / pax</td><td>${fmt(dep.results[viewPkg].hpp)}</td></tr>`;
-    html += `<tr><td class="left">Margin (${marginPct}%)</td><td>${fmt(dep.results[viewPkg].margin)}</td></tr>`;
-    html += `<tr class="price-row"><td class="left">Harga Jual / pax (QUAD)</td><td>${fmt(dep.results[viewPkg].selling)}</td></tr>`;
-    html += `<tr class="total-row"><td class="left">Total Omzet ${dep.pax} pax</td><td>${fmt(dep.results[viewPkg].selling * dep.pax)}</td></tr>`;
-    html += `<tr class="profit-row"><td class="left">Estimasi Laba Bersih</td><td>${fmt(dep.results[viewPkg].margin * dep.pax)}</td></tr>`;
-
-    html += `</tbody></table></div></div>`;
-  });
-
-  out.innerHTML = html;
-}
-
-function buildUnifiedSchedule(dep, pkgKey) {
-  const pkg = PACKAGES[pkgKey];
-  const dates = dep.dates[pkgKey];
-  const arrCode = dep.arrivalAirport.split('-')[0].trim() || 'CGK';
-  const arrDest = dep.arrivalAirport.split('-')[1] ? dep.arrivalAirport.split('-')[1].trim() : 'JED';
-  const depCode = dep.departureAirport.split('-')[0].trim() || 'MED';
-  const depDest = dep.departureAirport.split('-')[1] ? dep.departureAirport.split('-')[1].trim() : 'CGK';
-
-  const isMakkahFirst = dep.firstCity === 'makkah';
-  const city1 = isMakkahFirst ? 'Makkah' : 'Madinah';
-  const city2 = isMakkahFirst ? 'Madinah' : 'Makkah';
-  const hotel1 = isMakkahFirst ? dep.hotelMakkah : dep.hotelMadinah;
-  const hotel2 = isMakkahFirst ? dep.hotelMadinah : dep.hotelMakkah;
-
-  let itinerary = [];
-  let transport = [];
-  
-  let currentDate = new Date(dep.name || new Date());
-  const formatDate = (d) => d.toLocaleDateString('id-ID', {day:'2-digit', month:'short', year:'numeric'}).replace(/\./g, '-');
-  const formatDateLong = (d) => d.toLocaleDateString('id-ID', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
-
-  const addDay = (title, desc) => {
-    itinerary.push({ day: itinerary.length + 1, date: formatDateLong(currentDate), title: title, desc: desc });
-    currentDate.setDate(currentDate.getDate() + 1);
-  };
-
-  let ziarahMadinah = ["Masjid Quba", "Jabal Uhud", "Masjid Qiblatain"];
-  if (pkgKey === '12' || pkgKey === '16') ziarahMadinah.push("Masjid Khandaq");
-  ziarahMadinah.push(pkgKey === '16' ? "Kebun/Pasar Kurma Grosir" : "Kebun Kurma");
-  const extraMadinah = dep.tours.filter(t => t.city === 'Madinah').map(t => t.name);
-  const fullZiarahMadinah = [...ziarahMadinah, ...extraMadinah].join(', ');
-
-  const ziarahMakkah = ["Jabal Nur", "Jabal Tsur", "Padang Arafah", "Jabal Rahmah", "Mina", "Masjid Ji'ronah"];
-  const extraMakkah = dep.tours.filter(t => t.city === 'Makkah').map(t => t.name);
-  const fullZiarahMakkah = [...ziarahMakkah, ...extraMakkah].join(', ');
-
-  if (isMakkahFirst) {
-      addDay(`Keberangkatan & Tiba di ${arrDest}`, `Terbang dari Indonesia. Tiba di Bandara ${arrDest}, langsung menuju Hotel ${hotel1} di Makkah.`);
-      transport.push({ date: formatDate(currentDate), from: `AIRPORT ${arrDest}`, to: `HOTEL MAKKAH`, time: '21:45', bus: Math.ceil(dep.pax / 45) });
-      currentDate.setDate(currentDate.getDate() + 1);
-      addDay(`Umrah Wajib & Ibadah di Makkah`, `Melaksanakan Umrah Wajib dan memperbanyak ibadah.`);
-      addDay(`Ziarah Kota Makkah`, `Mengunjungi ${fullZiarahMakkah}.`);
-      transport.push({ date: formatDate(currentDate), from: `HOTEL MAKKAH`, to: `CITY TOUR`, time: '07:30', bus: 1 });
-      currentDate.setDate(currentDate.getDate() + 1);
-      for (let i = 4; i <= pkg.makkah; i++) {
-          addDay(`Memperbanyak Ibadah di Makkah`, `Shalat, Thawaf Sunnah, dan Ibadah.`);
-          currentDate.setDate(currentDate.getDate() + 1);
-      }
-      addDay(`Perpindahan ke Madinah`, `Check-out Hotel Makkah, menuju Madinah. Check-in Hotel ${hotel2}.`);
-      transport.push({ date: formatDate(currentDate), from: `HOTEL MAKKAH`, to: `HOTEL MADINAH`, time: '09:00', bus: Math.ceil(dep.pax / 45) });
-      currentDate.setDate(currentDate.getDate() + 1);
-      addDay(`Ibadah di Madinah`, `Memperbanyak shalat dan Raudhah di Masjid Nabawi.`);
-      currentDate.setDate(currentDate.getDate() + 1);
-      addDay(`Ziarah Kota Madinah`, `Mengunjungi ${fullZiarahMadinah}.`);
-      transport.push({ date: formatDate(currentDate), from: `HOTEL MADINAH`, to: `CITY TOUR`, time: '07:30', bus: 1 });
-      currentDate.setDate(currentDate.getDate() + 1);
-      for (let i = 4; i <= pkg.madinah; i++) {
-          if (pkgKey === '16' && i === 4) addDay(`Program Arbain`, `Mengejar 40 waktu shalat di Masjid Nabawi.`);
-          else addDay(`Memperbanyak Ibadah di Madinah`, `Shalat dan Ibadah.`);
-          currentDate.setDate(currentDate.getDate() + 1);
-      }
-      addDay("Kepulangan ke Indonesia", `Check-out Hotel Madinah, menuju Bandara ${depCode}. Penerbangan ${dep.flightNo}.`);
-      transport.push({ date: formatDate(currentDate), from: `HOTEL MADINAH`, to: `AIRPORT ${depCode}`, time: '15:30', bus: Math.ceil(dep.pax / 45) });
-  } else {
-      addDay(`Keberangkatan & Tiba di ${arrDest}`, `Terbang dari Indonesia. Tiba di Bandara ${arrDest}, langsung menuju Hotel ${hotel1} di Madinah.`);
-      transport.push({ date: formatDate(currentDate), from: `AIRPORT ${arrDest}`, to: `HOTEL MADINAH`, time: '21:45', bus: Math.ceil(dep.pax / 45) });
-      currentDate.setDate(currentDate.getDate() + 1);
-      addDay(`Ibadah di Madinah`, `Memperbanyak shalat dan Raudhah di Masjid Nabawi.`);
-      currentDate.setDate(currentDate.getDate() + 1);
-      addDay(`Ziarah Kota Madinah`, `Mengunjungi ${fullZiarahMadinah}.`);
-      transport.push({ date: formatDate(currentDate), from: `HOTEL MADINAH`, to: `CITY TOUR`, time: '07:30', bus: 1 });
-      currentDate.setDate(currentDate.getDate() + 1);
-      for (let i = 4; i <= pkg.madinah; i++) {
-          if (pkgKey === '16' && i === 4) addDay(`Program Arbain`, `Mengejar 40 waktu shalat di Masjid Nabawi.`);
-          else addDay(`Memperbanyak Ibadah di Madinah`, `Shalat dan Ibadah.`);
-          currentDate.setDate(currentDate.getDate() + 1);
-      }
-      addDay(`Perpindahan ke Makkah & Umrah Wajib`, `Check-out Hotel Madinah, menuju Makkah. Check-in Hotel ${hotel2}. Melaksanakan Umrah Wajib.`);
-      transport.push({ date: formatDate(currentDate), from: `HOTEL MADINAH`, to: `HOTEL MAKKAH`, time: '09:00', bus: Math.ceil(dep.pax / 45) });
-      currentDate.setDate(currentDate.getDate() + 1);
-      addDay(`Ibadah di Makkah`, `Memperbanyak shalat dan Thawaf Sunnah.`);
-      currentDate.setDate(currentDate.getDate() + 1);
-      addDay(`Ziarah Kota Makkah`, `Mengunjungi ${fullZiarahMakkah}.`);
-      transport.push({ date: formatDate(currentDate), from: `HOTEL MAKKAH`, to: `CITY TOUR`, time: '07:30', bus: 1 });
-      currentDate.setDate(currentDate.getDate() + 1);
-      for (let i = 4; i <= pkg.makkah; i++) {
-          addDay(`Memperbanyak Ibadah di Makkah`, `Shalat, Thawaf Sunnah, dan Ibadah.`);
-          currentDate.setDate(currentDate.getDate() + 1);
-      }
-      addDay("Kepulangan ke Indonesia", `Thawaf Wada', Check-out Hotel Makkah, menuju Bandara ${depCode}. Penerbangan ${dep.flightNo}.`);
-      transport.push({ date: formatDate(currentDate), from: `HOTEL MAKKAH`, to: `AIRPORT ${depCode}`, time: '15:30', bus: Math.ceil(dep.pax / 45) });
-  }
-  addDay("Tiba di Indonesia", "Tiba kembali di bandara asal dengan selamat.");
-  return { itinerary, transport };
-}
-
-function exportSurat() {
-  const depIndex = document.getElementById('exportDepSelect').value;
-  const pkgKey = document.getElementById('exportPkgSelect').value;
-  if (depIndex === '' || !latestDepartures[depIndex]) { alert('Pilih keberangkatan yang valid.'); return; }
-  const dep = latestDepartures[depIndex];
-  const pkg = PACKAGES[pkgKey];
-  const res = dep.results[pkgKey];
-  const dates = dep.dates[pkgKey];
-  const tier = document.getElementById('handlingTier').value;
-  const handling = tier !== 'none' ? HANDLING_DATA[tier] : { name: 'TANPA HANDLING', features: [] };
-  const travelName = document.getElementById('travelName').value || 'TRAVEL UMRAH';
-  const travelContact = document.getElementById('travelContact').value || '';
-  const toursStr = dep.tours.length ? dep.tours.map(t => t.name).join(', ') : 'Tidak ada';
-  const makanStr = getMakanMode() === 'fullboard' ? 'Fullboard (Termasuk)' : 'Include';
-  const dateFormatted = dep.name ? new Date(dep.name).toLocaleDateString('id-ID', {day:'2-digit', month:'long', year:'numeric'}) : '-';
-
-  const win = window.open('', '_blank');
-  win.document.open();
-  win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Surat Penawaran</title></head><body></body></html>');
-  win.document.close();
-
-  const template = document.getElementById('suratPenawaranTemplate');
-  const clone = template.content.cloneNode(true);
-  win.document.body.appendChild(clone);
-
-  const doc = win.document;
-  doc.getElementById('t-travelName').textContent = travelName.toUpperCase();
-  doc.getElementById('t-travelNameFooter').textContent = travelName;
-  doc.getElementById('t-travelContact').textContent = travelContact;
-  doc.getElementById('t-date').textContent = ': ' + dateFormatted;
-  doc.getElementById('t-flight-no').textContent = ': ' + dep.flightNo;
-  doc.getElementById('t-airline').textContent = ': ' + dep.airline;
-  doc.getElementById('t-arrival-airport').textContent = ': ' + dep.arrivalAirport;
-  doc.getElementById('t-departure-airport').textContent = ': ' + dep.departureAirport;
-  doc.getElementById('t-duration').textContent = ': ' + pkg.label + ' (Makkah ' + pkg.makkah + ' malam, Madinah ' + pkg.madinah + ' malam)';
-  doc.getElementById('t-pax').textContent = ': ' + dep.pax + ' Orang';
-  doc.getElementById('t-hotelMakkah').innerHTML = dep.hotelMakkah + '<br><small>Check-in: ' + dates.mIn + ' | Check-out: ' + dates.mOut + '</small>';
-  doc.getElementById('t-hotelMadinah').innerHTML = dep.hotelMadinah + '<br><small>Check-in: ' + dates.dIn + ' | Check-out: ' + dates.dOut + '</small>';
-  doc.getElementById('t-handling').innerHTML = '<b>' + handling.name + '</b>';
-  doc.getElementById('t-tours').textContent = toursStr;
-  doc.getElementById('t-makan').textContent = makanStr;
-  
-  const ul = doc.getElementById('t-featuresList');
-  if (tier !== 'none') {
-    doc.getElementById('t-handlingTitle').textContent = 'Fasilitas Handling ' + handling.name + ' Meliputi:';
-    handling.features.forEach(f => {
-      const li = doc.createElement('li');
-      li.textContent = f;
-      ul.appendChild(li);
-    });
-  } else {
-    doc.getElementById('div-features').style.display = 'none';
-  }
-  doc.getElementById('t-pricePax').textContent = fmt(res.selling);
-  doc.getElementById('t-totalLabel').textContent = 'Total Harga (' + dep.pax + ' Pax)';
-  doc.getElementById('t-priceTotal').textContent = fmt(res.selling * dep.pax);
-}
-
-function exportItinerary() {
-  const depIndex = document.getElementById('exportDepSelect').value;
-  const pkgKey = document.getElementById('exportPkgSelect').value;
-  if (depIndex === '' || !latestDepartures[depIndex]) { alert('Pilih keberangkatan yang valid.'); return; }
-  const dep = latestDepartures[depIndex];
-  const pkg = PACKAGES[pkgKey];
-  const schedule = buildUnifiedSchedule(dep, pkgKey);
-  const travelName = document.getElementById('travelName').value || 'TRAVEL UMRAH';
-  const travelContact = document.getElementById('travelContact').value || '';
-  const dateFormatted = dep.name ? new Date(dep.name).toLocaleDateString('id-ID', {day:'2-digit', month:'long', year:'numeric'}) : '-';
-
-  const win = window.open('', '_blank');
-  win.document.open();
-  win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Itinerary</title></head><body></body></html>');
-  win.document.close();
-
-  const template = document.getElementById('itineraryTemplate');
-  const clone = template.content.cloneNode(true);
-  win.document.body.appendChild(clone);
-
-  const doc = win.document;
-  doc.getElementById('t-travelName').textContent = travelName.toUpperCase();
-  doc.getElementById('t-travelNameFooter').textContent = travelName;
-  doc.getElementById('t-travelContact').textContent = travelContact;
-  doc.getElementById('t-date').textContent = dateFormatted;
-  doc.getElementById('t-flight-no').textContent = dep.flightNo;
-  doc.getElementById('t-airline').textContent = dep.airline;
-  doc.getElementById('t-arrival-airport').textContent = dep.arrivalAirport;
-  doc.getElementById('t-departure-airport').textContent = dep.departureAirport;
-  doc.getElementById('t-duration').textContent = pkg.label + ' (' + pkg.days + ' Hari)';
-  doc.getElementById('t-firstCity').textContent = dep.firstCity === 'makkah' ? 'Makkah' : 'Madinah';
-  doc.getElementById('t-hotelMakkah').textContent = dep.hotelMakkah;
-  doc.getElementById('t-hotelMadinah').textContent = dep.hotelMadinah;
-
-  const tbody = doc.getElementById('t-itineraryBody');
-  schedule.itinerary.forEach(item => {
-    const tr = doc.createElement('tr');
-    tr.innerHTML = 
-      '<td class="hari">' + item.day + '</td>' +
-      '<td class="tanggal">' + item.date + '</td>' +
-      '<td class="kegiatan">' + item.title + '</td>' +
-      '<td>' + item.desc + '</td>';
-    tbody.appendChild(tr);
-  });
-}
-
-function exportPaketInfo() {
-  const depIndex = document.getElementById('exportDepSelect').value;
-  const pkgKey = document.getElementById('exportPkgSelect').value;
-  if (depIndex === '' || !latestDepartures[depIndex]) { alert('Pilih keberangkatan yang valid.'); return; }
-  const dep = latestDepartures[depIndex];
-  const pkg = PACKAGES[pkgKey];
-  const dates = dep.dates[pkgKey];
-  const schedule = buildUnifiedSchedule(dep, pkgKey);
-  const travelName = document.getElementById('travelName').value;
-  
-  const win = window.open('', '_blank');
-  win.document.open();
-  win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Info Paket Logistik</title></head><body></body></html>');
-  win.document.close();
-
-  const template = document.getElementById('logistikTemplate');
-  const clone = template.content.cloneNode(true);
-  win.document.body.appendChild(clone);
-
-  const doc = win.document;
-  doc.getElementById('l-provider').textContent = dep.providerName;
-  doc.getElementById('l-muasasah').textContent = dep.muasasahName;
-  doc.getElementById('l-groupNo').textContent = "-";
-  doc.getElementById('l-subAgent').textContent = travelName;
-  doc.getElementById('l-pax').textContent = `Adult: ${dep.pax} | Child: ${dep.paxChild}`;
-  doc.getElementById('l-tourLeader').textContent = dep.tourLeader;
-  doc.getElementById('l-jawal').textContent = dep.jawal;
-
-  const flightBody = doc.getElementById('l-flightBody');
-  const arrCode = dep.arrivalAirport.split('-')[0].trim() || 'CGK';
-  const arrDest = dep.arrivalAirport.split('-')[1] ? dep.arrivalAirport.split('-')[1].trim() : 'JED';
-  const depCode = dep.departureAirport.split('-')[0].trim() || 'MED';
-  const depDest = dep.departureAirport.split('-')[1] ? dep.departureAirport.split('-')[1].trim() : 'CGK';
-
-  flightBody.innerHTML = `
-    <tr>
-      <td>${arrCode}</td><td>${arrDest}</td><td>${dates.mIn}</td><td>${dep.etd}</td><td>${dep.eta}</td>
-      <td>${dep.airline}</td><td>${dep.flightNo.split('/')[0] || dep.flightNo}</td><td></td>
-    </tr>
-    <tr>
-      <td>${depCode}</td><td>${depDest}</td><td>${dates.dOut}</td><td>19:40</td><td>09:25</td>
-      <td>${dep.airline}</td><td>${dep.flightNo.split('/')[1] || dep.flightNo}</td><td>+1</td>
-    </tr>`;
-
-  const hotelBody = doc.getElementById('l-hotelBody');
-  const totalPax = dep.pax + dep.paxChild;
-  const quadRooms = Math.ceil(totalPax / 4);
-
-  hotelBody.innerHTML += `
-    <tr>
-      <td>MAKKAH</td><td class="text-left">${dep.hotelMakkah}</td>
-      <td>${dates.mIn}</td><td>${dates.mOut}</td>
-      <td></td><td></td><td class="bold">${quadRooms}</td><td></td><td></td>
-    </tr>
-    <tr>
-      <td>MADINAH</td><td class="text-left">${dep.hotelMadinah}</td>
-      <td>${dates.dIn}</td><td>${dates.dOut}</td>
-      <td></td><td></td><td class="bold">${quadRooms}</td><td></td><td></td>
-    </tr>`;
-
-  const transBody = doc.getElementById('l-transBody');
-  schedule.transport.forEach(t => {
-    transBody.innerHTML += `
-      <tr>
-        <td>${t.date}</td><td>${t.from}</td><td>${t.to}</td><td>${t.time}</td><td>${t.bus}</td><td></td>
-      </tr>`;
-  });
-
-  doc.getElementById('l-localName').textContent = dep.localName;
-  doc.getElementById('l-localPhone').textContent = dep.localPhone;
-}
-
-function exportData() {
-  const data = {
-    static: {
-      travelName: document.getElementById('travelName').value,
-      travelContact: document.getElementById('travelContact').value,
-      kursSAR: document.getElementById('kursSAR').value,
-      kursUSD: document.getElementById('kursUSD').value,
-      defaultCur: document.getElementById('defaultCur').value,
-      visa: document.getElementById('visa').value, visaCur: document.getElementById('visa-cur').value,
-      perlengkapan: document.getElementById('perlengkapan').value, perlengkapanCur: document.getElementById('perlengkapan-cur').value,
-      asuransi: document.getElementById('asuransi').value, asuransiCur: document.getElementById('asuransi-cur').value,
-      rateMakkah: document.getElementById('rateMakkah').value, rateMakkahCur: document.getElementById('rateMakkah-cur').value,
-      rateMadinah: document.getElementById('rateMadinah').value, rateMadinahCur: document.getElementById('rateMadinah-cur').value,
-      makanMode: getMakanMode(), makanPerDay: document.getElementById('makanPerDay').value, makanPerDayCur: document.getElementById('makanPerDay-cur').value,
-      transport: document.getElementById('transport').value, transportCur: document.getElementById('transport-cur').value,
-      muthawifPerDay: document.getElementById('muthawifPerDay').value, muthawifPerDayCur: document.getElementById('muthawifPerDay-cur').value,
-      handlingTier: document.getElementById('handlingTier').value,
-      overhead: document.getElementById('overhead').value, margin: document.getElementById('margin').value,
-      viewPkg: document.getElementById('viewPkgSelect').value
-    },
-    departures: []
-  };
-
-  document.querySelectorAll('.dep-block').forEach(block => {
-    const tours = [];
-    block.querySelectorAll('.tour-item').forEach(item => {
-      const cb = item.querySelector('.tour-cb');
-      if (cb.checked) {
-        tours.push({ id: cb.dataset.tour, price: item.querySelector('.tour-price').value, cur: item.querySelector('.tour-cur').value });
-      }
-    });
-
-    data.departures.push({
-      name: block.querySelector('.dep-date').value,
-      flightNo: block.querySelector('.dep-flight-no').value,
-      airline: block.querySelector('.dep-airline').value,
-      firstCity: block.querySelector('.dep-first-city').value,
-      pax: block.querySelector('.dep-pax').value,
-      child: block.querySelector('.dep-child').value,
-      flight: block.querySelector('.dep-flight').value,
-      flightCur: block.querySelector('.dep-cur').value,
-      providerName: block.querySelector('.dep-provider').value,
-      muasasahName: block.querySelector('.dep-muasasah').value,
-      tourLeader: block.querySelector('.dep-tour-leader').value,
-      jawal: block.querySelector('.dep-jawal').value,
-      localName: block.querySelector('.dep-local-name').value,
-      localPhone: block.querySelector('.dep-local-phone').value,
-      hotelMakkah: block.querySelector('.dep-hotel-makkah').value,
-      hotelMadinah: block.querySelector('.dep-hotel-madinah').value,
-      arrivalAirport: block.querySelector('.dep-arrival-airport').value,
-      departureAirport: block.querySelector('.dep-departure-airport').value,
-      isLogistikOpen: block.querySelector('.logistik-fields').classList.contains('active'),
-      tours: tours
-    });
-  });
-
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  const now = new Date();
-  const dateStr = now.toISOString().slice(0,10);
-  const timeStr = now.getHours().toString().padStart(2,'0') + now.getMinutes().toString().padStart(2,'0');
-  a.download = `Data_Umrah_${dateStr}_${timeStr}.json`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
-
-function triggerImportData() { document.getElementById('importDataFile').click(); }
-
-function handleImportData(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      const data = JSON.parse(e.target.result);
-      if (!data.static || !data.departures) { alert('Format file tidak valid.'); return; }
-      const s = data.static;
-      document.getElementById('travelName').value = s.travelName || '';
-      document.getElementById('travelContact').value = s.travelContact || '';
-      document.getElementById('kursSAR').value = s.kursSAR || '';
-      document.getElementById('kursUSD').value = s.kursUSD || '';
-      document.getElementById('defaultCur').value = s.defaultCur || 'IDR';
-      document.getElementById('visa').value = s.visa || ''; document.getElementById('visa-cur').value = s.visaCur || 'IDR';
-      document.getElementById('perlengkapan').value = s.perlengkapan || ''; document.getElementById('perlengkapan-cur').value = s.perlengkapanCur || 'IDR';
-      document.getElementById('asuransi').value = s.asuransi || ''; document.getElementById('asuransi-cur').value = s.asuransiCur || 'IDR';
-      document.getElementById('rateMakkah').value = s.rateMakkah || ''; document.getElementById('rateMakkah-cur').value = s.rateMakkahCur || 'IDR';
-      document.getElementById('rateMadinah').value = s.rateMadinah || ''; document.getElementById('rateMadinah-cur').value = s.rateMadinahCur || 'IDR';
-      document.getElementById('makanPerDay').value = s.makanPerDay || ''; document.getElementById('makanPerDay-cur').value = s.makanPerDayCur || 'IDR';
-      document.querySelector(`input[name="makanMode"][value="${s.makanMode || 'fullboard'}"]`).checked = true;
-      updateMakanUI(s.makanMode || 'fullboard');
-      document.getElementById('transport').value = s.transport || ''; document.getElementById('transport-cur').value = s.transportCur || 'IDR';
-      document.getElementById('muthawifPerDay').value = s.muthawifPerDay || ''; document.getElementById('muthawifPerDay-cur').value = s.muthawifPerDayCur || 'SAR';
-      document.getElementById('handlingTier').value = s.handlingTier || 'none'; updateHandlingFeatures();
-      document.getElementById('overhead').value = s.overhead || '5';
-      document.getElementById('margin').value = s.margin || '20';
-      if(s.viewPkg) syncPkgSelect(s.viewPkg);
-
-      const wrap = document.getElementById('departures');
-      wrap.innerHTML = '';
-      data.departures.forEach(dep => {
-        addDeparture(dep.name, dep.flight, dep.pax, dep.airline, dep.hotelMakkah, dep.hotelMadinah, dep.firstCity, dep.flightNo);
-        const block = document.querySelectorAll('.dep-block')[document.querySelectorAll('.dep-block').length - 1];
-        block.querySelector('.dep-child').value = dep.child || 0;
-        block.querySelector('.dep-cur').value = dep.flightCur || 'IDR';
-        block.querySelector('.dep-provider').value = dep.providerName || '';
-        block.querySelector('.dep-muasasah').value = dep.muasasahName || '';
-        block.querySelector('.dep-tour-leader').value = dep.tourLeader || '';
-        block.querySelector('.dep-jawal').value = dep.jawal || '';
-        block.querySelector('.dep-local-name').value = dep.localName || '';
-        block.querySelector('.dep-local-phone').value = dep.localPhone || '';
-        block.querySelector('.dep-hotel-makkah').value = dep.hotelMakkah || '';
-        block.querySelector('.dep-hotel-madinah').value = dep.hotelMadinah || '';
-        block.querySelector('.dep-arrival-airport').value = dep.arrivalAirport || '';
-        block.querySelector('.dep-departure-airport').value = dep.departureAirport || '';
-        if (dep.isLogistikOpen) {
-          block.querySelector('.logistik-toggle-area input').checked = true;
-          block.querySelector('.logistik-fields').classList.add('active');
-        }
-        if (dep.tours && dep.tours.length > 0) {
-          dep.tours.forEach(t => {
-            const cb = block.querySelector(`.tour-cb[data-tour="${t.id}"]`);
-            if (cb) {
-              cb.checked = true;
-              toggleTourInput(cb);
-              block.querySelector(`.tour-price[data-tour="${t.id}"]`).value = t.price;
-              block.querySelector(`.tour-cur[data-tour="${t.id}"]`).value = t.cur;
-            }
-          });
-        }
-      });
-      calculate();
-      alert('Data berhasil dimuat!');
-    } catch (err) {
-      alert('Gagal membaca file JSON.');
-      console.error(err);
-    }
-  };
-  reader.readAsText(file);
-  event.target.value = '';
-}
-
-function resetCalculator() {
-  if(confirm('Reset semua form dan hasil perhitungan?')) location.reload();
-}
-
-document.getElementById('kursSAR').addEventListener('input', calculate);
-document.getElementById('kursUSD').addEventListener('input', calculate);
-document.getElementById('defaultCur').addEventListener('change', applyDefaultCurrency);
-document.getElementById('importPackage').addEventListener('change', calculate);
-document.getElementById('handlingTier').addEventListener('change', updateHandlingFeatures);
-
-['travelName', 'travelContact', 'visa', 'perlengkapan', 'asuransi', 'transport', 'muthawifPerDay',
- 'rateMakkah', 'rateMadinah', 'makanPerDay', 'overhead', 'margin'
-].forEach(id => {
-  const inp = document.getElementById(id);
-  const sel = document.getElementById(id + '-cur');
-  if (inp) inp.addEventListener('input', calculate);
-  if (sel) sel.addEventListener('change', calculate);
-});
-
-document.querySelectorAll('input[name="makanMode"]').forEach(r => {
-  r.addEventListener('change', () => {
-    updateMakanUI(document.querySelector('input[name="makanMode"]:checked').value);
-  });
-});
-
-document.getElementById('muthawifPerDay-cur').value = 'SAR';
-
-const today = new Date();
-today.setDate(today.getDate() + 30);
-const defaultDateStr = today.toISOString().split('T')[0];
-
-addDeparture(defaultDateStr, 15000000, 45, 'Saudi Airlines', 'Swissotel Makkah', 'Frontel Al Harithia', 'madinah', 'SV 817 / SV 816');
-updateMakanUI('fullboard');
-updateHandlingFeatures();
-calculate();
-attachNumberFormatters();
-</script>
 </body>
 </html>
