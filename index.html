@@ -1349,7 +1349,11 @@ function exportItinerary() {
   win.document.open();
   win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Itinerary</title></head><body></body></html>');
   win.document.close();
+  
+  // Cek apakah template ada
   const template = document.getElementById('itineraryTemplate');
+  if(!template) { alert('Template Itinerary tidak ditemukan!'); return; }
+  
   const clone = template.content.cloneNode(true);
   win.document.body.appendChild(clone);
   const doc = win.document;
@@ -1386,7 +1390,11 @@ function exportPaketInfo() {
   win.document.open();
   win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Info Paket Logistik</title></head><body></body></html>');
   win.document.close();
+  
+  // Cek apakah template ada
   const template = document.getElementById('logistikTemplate');
+  if(!template) { alert('Template Logistik tidak ditemukan!'); return; }
+  
   const clone = template.content.cloneNode(true);
   win.document.body.appendChild(clone);
   const doc = win.document;
@@ -1539,7 +1547,11 @@ document.querySelectorAll('input, select').forEach(el => {
 });
 </script>
 
-<!-- TEMPLATE SURAT PENAWARAN -->
+<!-- ============================================== -->
+<!-- TEMPLATE-TEMPLATE HTML UNTUK CETAK DOKUMEN     -->
+<!-- ============================================== -->
+
+<!-- 1. Template Surat Penawaran -->
 <template id="suratPenawaranTemplate">
   <style>
     body { font-family: 'Times New Roman', Times, serif; padding: 40px; color: #000; line-height: 1.5; }
@@ -1622,5 +1634,154 @@ document.querySelectorAll('input, select').forEach(el => {
   
   <button class="print-btn" onclick="window.print()">🖨️ Cetak Surat Penawaran</button>
 </template>
+
+<!-- 2. Template Itinerary -->
+<template id="itineraryTemplate">
+  <style>
+    body { font-family: Arial, sans-serif; padding: 30px; color: #000; font-size: 14px; }
+    .header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 15px; margin-bottom: 20px; }
+    .header h1 { margin: 0; font-size: 24px; }
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+    .info-item { margin-bottom: 5px; }
+    .info-item span { font-weight: bold; display: inline-block; width: 140px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #000; padding: 8px; text-align: left; vertical-align: top; }
+    th { background: #f0f0f0; text-align: center; }
+    .hari { text-align: center; width: 50px; font-weight: bold; }
+    .tanggal { width: 120px; }
+    .kegiatan { font-weight: bold; width: 150px; }
+    .footer { text-align: right; margin-top: 40px; }
+    .print-btn { display: block; margin: 30px auto; padding: 12px 24px; background: #0f766e; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold;}
+    @media print { body { padding: 0; } .print-btn { display: none; } }
+  </style>
+  <div class="header">
+    <h1 id="t-travelName"></h1>
+    <p id="t-travelContact"></p>
+  </div>
+  <h2 style="text-align:center;">ITINERARY PERJALANAN UMRAH</h2>
+  <div class="info-grid">
+    <div>
+      <div class="info-item"><span>Tanggal Keberangkatan</span> : <span id="t-date" style="width:auto; font-weight:normal;"></span></div>
+      <div class="info-item"><span>Durasi Paket</span> : <span id="t-duration" style="width:auto; font-weight:normal;"></span></div>
+      <div class="info-item"><span>No. Penerbangan</span> : <span id="t-flight-no" style="width:auto; font-weight:normal;"></span></div>
+      <div class="info-item"><span>Maskapai</span> : <span id="t-airline" style="width:auto; font-weight:normal;"></span></div>
+    </div>
+    <div>
+      <div class="info-item"><span>Kota Pertama</span> : <span id="t-firstCity" style="width:auto; font-weight:normal;"></span></div>
+      <div class="info-item"><span>Hotel Makkah</span> : <span id="t-hotelMakkah" style="width:auto; font-weight:normal;"></span></div>
+      <div class="info-item"><span>Hotel Madinah</span> : <span id="t-hotelMadinah" style="width:auto; font-weight:normal;"></span></div>
+      <div class="info-item"><span>Bandara</span> : <span id="t-arrival-airport" style="width:auto; font-weight:normal;"></span> - <span id="t-departure-airport" style="width:auto; font-weight:normal;"></span></div>
+    </div>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th class="hari">Hari</th>
+        <th class="tanggal">Tanggal</th>
+        <th class="kegiatan">Kegiatan</th>
+        <th>Detail</th>
+      </tr>
+    </thead>
+    <tbody id="t-itineraryBody"></tbody>
+  </table>
+  <div class="footer">
+    <p>Hormat Kami,</p><br><br><br>
+    <p><b id="t-travelNameFooter"></b></p>
+  </div>
+  <button class="print-btn" onclick="window.print()">🖨️ Cetak Itinerary</button>
+</template>
+
+<!-- 3. Template Info Paket (Logistik) -->
+<template id="logistikTemplate">
+  <style>
+    body { font-family: Arial, sans-serif; padding: 30px; color: #000; font-size: 13px; }
+    .header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; }
+    .header h1 { margin: 0; font-size: 22px; }
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+    .info-box { border: 1px solid #000; padding: 10px; }
+    .info-row { margin-bottom: 5px; display: flex; }
+    .info-label { width: 120px; font-weight: bold; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+    th, td { border: 1px solid #000; padding: 6px; text-align: center; }
+    th { background: #f0f0f0; }
+    .text-left { text-align: left; }
+    .bold { font-weight: bold; }
+    .print-btn { display: block; margin: 30px auto; padding: 12px 24px; background: #0f766e; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold;}
+    @media print { body { padding: 0; } .print-btn { display: none; } }
+  </style>
+  <div class="header">
+    <h1>INFO PAKET & LOGISTIK</h1>
+    <p>Dokumen Internal Operasional</p>
+  </div>
+  
+  <div class="info-grid">
+    <div class="info-box">
+      <div class="info-row"><div class="info-label">Provider</div><div id="l-provider">-</div></div>
+      <div class="info-row"><div class="info-label">Muasasah</div><div id="l-muasasah">-</div></div>
+      <div class="info-row"><div class="info-label">Sub Agent</div><div id="l-subAgent">-</div></div>
+      <div class="info-row"><div class="info-label">Group No.</div><div id="l-groupNo">-</div></div>
+    </div>
+    <div class="info-box">
+      <div class="info-row"><div class="info-label">Tour Leader</div><div id="l-tourLeader">-</div></div>
+      <div class="info-row"><div class="info-label">No. Jawal</div><div id="l-jawal">-</div></div>
+      <div class="info-row"><div class="info-label">Local Contact</div><div id="l-localName">-</div></div>
+      <div class="info-row"><div class="info-label">No. HP</div><div id="l-localPhone">-</div></div>
+      <div class="info-row"><div class="info-label">Total Pax</div><div id="l-pax">-</div></div>
+    </div>
+  </div>
+  
+  <h3>1. Data Penerbangan</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Dari</th>
+        <th>Ke</th>
+        <th>Tanggal</th>
+        <th>ETD</th>
+        <th>ETA</th>
+        <th>Maskapai</th>
+        <th>Flight No</th>
+        <th>Next Day</th>
+      </tr>
+    </thead>
+    <tbody id="l-flightBody"></tbody>
+  </table>
+
+  <h3>2. Akomodasi Hotel</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Kota</th>
+        <th>Nama Hotel</th>
+        <th>Check In</th>
+        <th>Check Out</th>
+        <th>Single</th>
+        <th>Double</th>
+        <th>Quad</th>
+        <th>Triple</th>
+        <th>Keterangan</th>
+      </tr>
+    </thead>
+    <tbody id="l-hotelBody"></tbody>
+  </table>
+
+  <h3>3. Transportasi</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Tanggal</th>
+        <th>Dari</th>
+        <th>Ke</th>
+        <th>Jam</th>
+        <th>Bus</th>
+        <th>Keterangan</th>
+      </tr>
+    </thead>
+    <tbody id="l-transBody"></tbody>
+  </table>
+
+  <button class="print-btn" onclick="window.print()">🖨️ Cetak Info Logistik</button>
+</template>
+
 </body>
 </html>
